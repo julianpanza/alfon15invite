@@ -253,7 +253,3 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 });
-window.addEventListener("load", () => {
-  const seccionCarga = document.querySelector(".seccion-carga");
-  seccionCarga.classList.add("hidden");
-});
