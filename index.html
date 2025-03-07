@@ -303,25 +303,27 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
 <script>
 const CLIENT_ID = "d950ae09b4e14eb0b82b70151b1dcb82"; 
 const REDIRECT_URI = "https://julianpanza.github.io/alfon15invite/"; 
-const PLAYLIST_ID = "4Vm8iih2i2K6iXuPev61Il?si=1e9fa2e72b1b4d90"; 
-let accessToken = null;
+const PLAYLIST_ID = "4Vm8iih2i2K6iXuPev61Il?si=1e9fa2e72b1b4d90ID"; 
+let accessToken = getTokenFromUrl();
 
-// Obtener token de la URL después de autenticación
+// Obtener token desde la URL y almacenarlo
 function getTokenFromUrl() {
     const hash = window.location.hash.substring(1);
     const params = new URLSearchParams(hash);
-    return params.get("access_token");
+    const token = params.get("access_token");
+
+    if (token) {
+        localStorage.setItem("spotify_token", token); // Guardar token en localStorage
+        window.history.pushState({}, document.title, window.location.pathname); // Limpiar la URL
+    }
+    
+    return token || localStorage.getItem("spotify_token"); // Usar token almacenado si ya existe
 }
 
 // Función para autenticarse en Spotify
 function authenticate() {
-    const token = getTokenFromUrl();
-    if (token) {
-        accessToken = token;
-    } else {
-        const authUrl = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${REDIRECT_URI}&scope=playlist-modify-public playlist-modify-private`;
-        window.location.href = authUrl;
-    }
+    const authUrl = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${REDIRECT_URI}&scope=playlist-modify-public playlist-modify-private`;
+    window.location.href = authUrl;
 }
 
 // Función para buscar canciones en Spotify
@@ -373,8 +375,11 @@ async function addSong(trackUri) {
 }
 
 // Verifica si ya hay un token cuando el usuario entra
-window.onload = authenticate;
+if (!accessToken) {
+    authenticate();
+}
 </script>
+
 
 <br>
 
