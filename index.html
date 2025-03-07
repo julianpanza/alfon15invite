@@ -304,7 +304,7 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
 const CLIENT_ID = "d950ae09b4e14eb0b82b70151b1dcb82"; 
 const REDIRECT_URI = "https://julianpanza.github.io/alfon15invite/"; 
 const PLAYLIST_ID = "4Vm8iih2i2K6iXuPev61Il?si=1e9fa2e72b1b4d90ID"; 
-let accessToken = getTokenFromUrl();
+let accessToken = getTokenFromUrl() || localStorage.getItem("spotify_token");
 
 // Obtener token desde la URL y almacenarlo
 function getTokenFromUrl() {
@@ -317,7 +317,7 @@ function getTokenFromUrl() {
         window.history.pushState({}, document.title, window.location.pathname); // Limpiar la URL
     }
     
-    return token || localStorage.getItem("spotify_token"); // Usar token almacenado si ya existe
+    return token;
 }
 
 // Función para autenticarse en Spotify
@@ -336,23 +336,30 @@ async function searchSong() {
     const query = document.getElementById("songSearch").value;
     if (!query) return;
 
-    const response = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=5`, {
-        headers: { Authorization: `Bearer ${accessToken}` }
-    });
+    try {
+        const response = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=5`, {
+            headers: { Authorization: `Bearer ${accessToken}` }
+        });
 
-    const data = await response.json();
-    const resultsDiv = document.getElementById("searchResults");
-    resultsDiv.innerHTML = "";
+        if (!response.ok) throw new Error("Error al buscar canciones");
 
-    data.tracks.items.forEach(track => {
-        const trackDiv = document.createElement("div");
-        trackDiv.innerHTML = `
-            <p>${track.name} - ${track.artists[0].name} 
-                <button onclick="addSong('${track.uri}')">➕ Agregar</button>
-            </p>
-        `;
-        resultsDiv.appendChild(trackDiv);
-    });
+        const data = await response.json();
+        const resultsDiv = document.getElementById("searchResults");
+        resultsDiv.innerHTML = "";
+
+        data.tracks.items.forEach(track => {
+            const trackDiv = document.createElement("div");
+            trackDiv.innerHTML = `
+                <p>${track.name} - ${track.artists[0].name} 
+                    <button onclick="addSong('${track.uri}')">➕ Agregar</button>
+                </p>
+            `;
+            resultsDiv.appendChild(trackDiv);
+        });
+    } catch (error) {
+        console.error(error);
+        alert("❌ Hubo un problema al buscar las canciones.");
+    }
 }
 
 // Función para agregar una canción a la playlist
@@ -362,16 +369,28 @@ async function addSong(trackUri) {
         return;
     }
 
-    await fetch(`https://api.spotify.com/v1/playlists/${PLAYLIST_ID}/tracks`, {
-        method: "POST",
-        headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ uris: [trackUri] })
-    });
+    try {
+        const response = await fetch(`https://api.spotify.com/v1/playlists/${PLAYLIST_ID}/tracks`, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ uris: [trackUri] })
+        });
 
-    alert("✅ Canción agregada a la playlist");
+        const result = await response.json();
+        console.log("Respuesta de Spotify:", result);
+
+        if (response.ok) {
+            alert("✅ Canción agregada a la playlist");
+        } else {
+            alert("❌ Error al agregar la canción. Ver consola.");
+        }
+    } catch (error) {
+        console.error("Error al agregar canción:", error);
+        alert("❌ No se pudo agregar la canción. Ver consola.");
+    }
 }
 
 // Verifica si ya hay un token cuando el usuario entra
@@ -379,6 +398,7 @@ if (!accessToken) {
     authenticate();
 }
 </script>
+
 
 
 <br>
