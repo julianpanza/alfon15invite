@@ -297,37 +297,42 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
 <br>
 <div class="animated divCanciones">
 <input type="text" id="songSearch" placeholder="Escribe una canción...">
-<button onclick="searchSong()">Buscar</button>
+<button onclick="searchSong()">🔍 Buscar</button>
 <div id="searchResults"></div>
-</div>
+
 <script>
 const CLIENT_ID = "d950ae09b4e14eb0b82b70151b1dcb82"; 
 const REDIRECT_URI = "https://julianpanza.github.io/alfon15invite/"; 
-const PLAYLIST_ID = "4Vm8iih2i2K6iXuPev61Il?si=1e9fa2e72b1b4d90ID"; 
+const PLAYLIST_ID = "4Vm8iih2i2K6iXuPev61Il?si=1e9fa2e72b1b4d90"; 
 let accessToken = null;
-
-// Función para autenticarse en Spotify
-async function authenticate() {
-    const authUrl = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${REDIRECT_URI}&scope=playlist-modify-public playlist-modify-private`;
-    window.location.href = authUrl;
-}
 
 // Obtener token de la URL después de autenticación
 function getTokenFromUrl() {
     const hash = window.location.hash.substring(1);
     const params = new URLSearchParams(hash);
-    accessToken = params.get("access_token");
+    return params.get("access_token");
 }
 
-// Función para buscar canciones
-async function searchSong() {
-    const query = document.getElementById("songSearch").value;
-    if (!query) return;
+// Función para autenticarse en Spotify
+function authenticate() {
+    const token = getTokenFromUrl();
+    if (token) {
+        accessToken = token;
+    } else {
+        const authUrl = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${REDIRECT_URI}&scope=playlist-modify-public playlist-modify-private`;
+        window.location.href = authUrl;
+    }
+}
 
+// Función para buscar canciones en Spotify
+async function searchSong() {
     if (!accessToken) {
         authenticate();
         return;
     }
+
+    const query = document.getElementById("songSearch").value;
+    if (!query) return;
 
     const response = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=5`, {
         headers: { Authorization: `Bearer ${accessToken}` }
@@ -340,13 +345,15 @@ async function searchSong() {
     data.tracks.items.forEach(track => {
         const trackDiv = document.createElement("div");
         trackDiv.innerHTML = `
-            <p>${track.name} - ${track.artists[0].name} <button onclick="addSong('${track.uri}')">➕ Agregar</button></p>
+            <p>${track.name} - ${track.artists[0].name} 
+                <button onclick="addSong('${track.uri}')">➕ Agregar</button>
+            </p>
         `;
         resultsDiv.appendChild(trackDiv);
     });
 }
 
-// Función para agregar canción a la playlist
+// Función para agregar una canción a la playlist
 async function addSong(trackUri) {
     if (!accessToken) {
         authenticate();
@@ -365,8 +372,8 @@ async function addSong(trackUri) {
     alert("✅ Canción agregada a la playlist");
 }
 
-// Obtener token si está en la URL
-getTokenFromUrl();
+// Verifica si ya hay un token cuando el usuario entra
+window.onload = authenticate;
 </script>
 
 <br>
