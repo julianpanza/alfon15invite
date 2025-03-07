@@ -281,65 +281,61 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
 
 </section>
  
-   <!-- Canciones -->
+<!-- Canciones -->
 <section class="canciones">
     <div class="container">
-        <iframe style="border-radius:12px"
-            src="https://open.spotify.com/embed/playlist/4Vm8iih2i2K6iXuPev61Il"
-            width="90%"
-            height="300"
-            frameborder="0"
-            allowfullscreen=""
+        <iframe style="border-radius:12px" 
+            src="https://open.spotify.com/embed/playlist/4Vm8iih2i2K6iXuPev61Il?si=1e9fa2e72b1b4d90" 
+            width="100%" 
+            height="250" 
+            frameborder="0" 
+            allowfullscreen="" 
             allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture">
         </iframe>
-
         <br>
-  </div>
         <div class="animated divCanciones">
-            <input type="text" id="songSearch" placeholder="Escribe una canción...">
-            <button onclick="searchSong()"> Buscar</button>
-            <div id="searchResults"></div>
+            <img src="assets/img/icono-canciones.svg" alt="" class="bounce-in">
+            <h4>¡PLAYLIST!</h4>
+            <p>¡Ayudame sugiriendo las canciones que pensás que no pueden faltar en la fiesta!</p>
+            <a target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSflLqhwmhvp2uNeFbliUVQFj3Yhgkko3xh0nRF-6A47T-aCKg/viewform?usp=header" class="btn btn-alt">Sugerir canción</a>
+
+            <div>
+                <input type="text" id="songSearch" placeholder="Escribe una canción...">
+                <button onclick="searchSong()">🔍 Buscar</button>
+                <div id="searchResults"></div>
+            </div>
         </div>
     </div>
 
     <script>
         const CLIENT_ID = "d950ae09b4e14eb0b82b70151b1dcb82"; 
         const REDIRECT_URI = "https://julianpanza.github.io/alfon15invite/"; 
-        const PLAYLIST_ID = "4Vm8iih2i2K6iXuPev61Il";
-
+        const PLAYLIST_ID = "4Vm8iih2i2K6iXuPev61Il?si=1e9fa2e72b1b4d90"; 
         let accessToken = getTokenFromUrl() || localStorage.getItem("spotify_token");
-        let tokenExpiration = localStorage.getItem("spotify_token_expiration");
 
+        // Obtener token desde la URL y almacenarlo
         function getTokenFromUrl() {
             const hash = window.location.hash.substring(1);
             const params = new URLSearchParams(hash);
             const token = params.get("access_token");
-            const expiresIn = params.get("expires_in");
 
-            if (token && expiresIn) {
-                localStorage.setItem("spotify_token", token);
-                localStorage.setItem("spotify_token_expiration", Date.now() + expiresIn * 1000);
-                window.history.pushState({}, document.title, window.location.pathname);
+            if (token) {
+                localStorage.setItem("spotify_token", token); // Guardar token en localStorage
+                window.history.pushState({}, document.title, window.location.pathname); // Limpiar la URL
             }
-
+            
             return token;
         }
 
+        // Función para autenticarse en Spotify
         function authenticate() {
             const authUrl = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${REDIRECT_URI}&scope=playlist-modify-public playlist-modify-private`;
             window.location.href = authUrl;
         }
 
-        function isTokenExpired() {
-            return !tokenExpiration || Date.now() > tokenExpiration;
-        }
-
-        if (!accessToken || isTokenExpired()) {
-            authenticate();
-        }
-
+        // Función para buscar canciones en Spotify
         async function searchSong() {
-            if (!accessToken || isTokenExpired()) {
+            if (!accessToken) {
                 authenticate();
                 return;
             }
@@ -373,8 +369,9 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
             }
         }
 
+        // Función para agregar una canción a la playlist
         async function addSong(trackUri) {
-            if (!accessToken || isTokenExpired()) {
+            if (!accessToken) {
                 authenticate();
                 return;
             }
@@ -394,6 +391,12 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
 
                 if (response.ok) {
                     alert("✅ Canción agregada a la playlist");
+
+                    // 🔄 Refrescar la lista de reproducción
+                    refreshPlaylist();
+
+                    // ▶ Reproducir la nueva canción automáticamente
+                    playSong(trackUri);
                 } else {
                     alert("❌ Error al agregar la canción. Ver consola.");
                 }
@@ -402,7 +405,38 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
                 alert("❌ No se pudo agregar la canción. Ver consola.");
             }
         }
+
+        // Función para refrescar el iframe
+        function refreshPlaylist() {
+            const iframe = document.querySelector("iframe");
+            if (iframe) {
+                iframe.src = iframe.src; // Recarga el iframe sin afectar la página
+            }
+        }
+
+        // Función para reproducir automáticamente la canción agregada
+        async function playSong(trackUri) {
+            try {
+                await fetch("https://api.spotify.com/v1/me/player/play", {
+                    method: "PUT",
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ uris: [trackUri] })
+                });
+            } catch (error) {
+                console.error("No se pudo reproducir la canción:", error);
+                alert("⚠️ No se pudo iniciar la reproducción automática. Asegúrate de tener Spotify abierto.");
+            }
+        }
+
+        // Verifica si ya hay un token cuando el usuario entra
+        if (!accessToken) {
+            authenticate();
+        }
     </script>
+</section>
 <div class="container">
     <img src="assets/img/icono-canciones.svg" alt="" class="bounce-in">
     <div class="animated divCanciones">
