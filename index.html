@@ -299,11 +299,11 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
             <p>¡Ayudame sugiriendo las canciones que pensás que no pueden faltar en la fiesta!</p>
             <a target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSflLqhwmhvp2uNeFbliUVQFj3Yhgkko3xh0nRF-6A47T-aCKg/viewform?usp=header" class="btn btn-alt">Sugerir canción</a>
 
-            <div>
-                <input type="text" id="songSearch" placeholder="Escribe una canción...">
-                <button onclick="searchSong()">🔍 Buscar</button>
-                <div id="searchResults"></div>
+            <div class="search-container">
+                <input type="text" id="songSearch" class="search-input" placeholder="Escribe una canción...">
+                <button onclick="searchSong()" class="btn btn-primary">🔍 Buscar</button>
             </div>
+            <div id="searchResults" class="search-results"></div>
         </div>
     </div>
 
@@ -356,9 +356,10 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
 
                 data.tracks.items.forEach(track => {
                     const trackDiv = document.createElement("div");
+                    trackDiv.classList.add('track-item');
                     trackDiv.innerHTML = `
                         <p>${track.name} - ${track.artists[0].name} 
-                            <button onclick="addSong('${track.uri}')">➕ Agregar</button>
+                            <button onclick="addSong('${track.uri}')" class="btn btn-alt">➕ Agregar</button>
                         </p>
                     `;
                     resultsDiv.appendChild(trackDiv);
@@ -436,6 +437,76 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
             authenticate();
         }
     </script>
+
+    <style>
+        .search-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .search-input {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            width: 60%;
+        }
+
+        .search-results {
+            margin-top: 20px;
+        }
+
+        .track-item {
+            padding: 10px;
+            background-color: #f9f9f9;
+            margin: 5px 0;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .track-item button {
+            padding: 5px 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .track-item button:hover {
+            background-color: #218838;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-alt {
+            background-color: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-alt:hover {
+            background-color: #5a6268;
+        }
+    </style>
+</section>
 </section>
 <div class="container">
     <img src="assets/img/icono-canciones.svg" alt="" class="bounce-in">
