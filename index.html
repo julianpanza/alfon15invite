@@ -458,91 +458,75 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Verificar compatibilidad del reproductor
 function checkPlayerCompatibility() {
-  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-  
-  if (isMobile) {
-    // Verificar después de que el iframe cargue
-    setTimeout(() => {
-      const spotifyFrame = document.querySelector('.spotify-embed-guest iframe');
-      
-      try {
-        // Intenta detectar si muestra el mensaje de "Muestra"
-        if (spotifyFrame && spotifyFrame.contentDocument && 
-            /muestra|sample|preview/i.test(spotifyFrame.contentDocument.body.textContent)) {
-          
-          document.querySelector('.spotify-embed-guest').classList.add('hidden');
-          document.getElementById('alternativePlayer').classList.remove('hidden');
-          loadAlternativePlaylist();
-        }
-      } catch (e) {
-        // Si hay error de CORS, asumimos que puede haber problemas
-        document.querySelector('.spotify-embed-guest').classList.add('hidden');
-        document.getElementById('alternativePlayer').classList.remove('hidden');
-        loadAlternativePlaylist();
-      }
-    }, 3000);
-  }
-}
-
-// Cargar playlist alternativa
-async function loadAlternativePlaylist() {
-  try {
-    // Intenta cargar la playlist desde la API
-    let tracks = [];
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     
-    if (spotifyAccessToken) {
-      const response = await fetch(`https://api.spotify.com/v1/playlists/${SPOTIFY_CONFIG.PLAYLIST_ID}/tracks`, {
-        headers: { 'Authorization': `Bearer ${spotifyAccessToken}` }
-      });
-      
-      const data = await response.json();
-      tracks = data.items.map(item => item.track);
-    } else {
-      // Si no hay token, muestra un mensaje alternativo
-      document.getElementById('playlistTitles').innerHTML = `
-        <div class="track-item">
-          <span>Para ver la lista completa de canciones, conéctate con Spotify</span>
-          <button onclick="connectWithSpotify()" class="btn">Conectar</button>
-        </div>
-      `;
-      return;
+    if (isMobile) {
+        // Ocultar iframe de Spotify después de 3 segundos si muestra "Muestra"
+        setTimeout(() => {
+            const spotifyFrame = document.querySelector('.spotify-embed-guest iframe');
+            
+            try {
+                if (spotifyFrame && spotifyFrame.contentDocument && 
+                    /muestra|sample|preview/i.test(spotifyFrame.contentDocument.body.textContent)) {
+                    
+                    document.querySelector('.spotify-embed-guest').classList.add('hidden');
+                    document.getElementById('alternativePlayer').classList.remove('hidden');
+                    loadAlternativePlaylist();
+                }
+            } catch (e) {
+                // Si hay error de CORS, mostrar alternativa
+                document.querySelector('.spotify-embed-guest').classList.add('hidden');
+                document.getElementById('alternativePlayer').classList.remove('hidden');
+                loadAlternativePlaylist();
+            }
+        }, 3000);
     }
-    
-    // Mostrar lista de canciones con previsualizaciones
-    const playlistHTML = tracks.map(track => `
-      <div class="track-item">
-        <div class="track-info">
-          <strong>${track.name}</strong>
-          <small>${track.artists.map(a => a.name).join(", ")}</small>
-        </div>
-        <div>
-          ${track.preview_url ? 
-            `<button onclick="playPreview('${track.preview_url}')" class="preview-btn">
-              <i class="fas fa-play"></i> Preview
-            </button>` : ''
-          }
-          <a href="${track.external_urls.spotify}" target="_blank" class="preview-btn">
-            <i class="fab fa-spotify"></i> Escuchar
-          </a>
-        </div>
-      </div>
-    `).join('');
-    
-    document.getElementById('playlistTitles').innerHTML = playlistHTML;
-    
-  } catch (error) {
-    console.error("Error cargando playlist:", error);
-    document.getElementById('playlistTitles').innerHTML = `
-      <div class="track-item">
-        <span>No se pudo cargar la playlist. Por favor, abre Spotify para escuchar.</span>
-        <a href="https://open.spotify.com/playlist/4Vm8iih2i2K6iXuPev61Il" target="_blank" class="btn">
-          Abrir en Spotify
-        </a>
-      </div>
-    `;
-  }
 }
 
+async function loadAlternativePlaylist() {
+    try {
+        const response = await fetch(`https://api.spotify.com/v1/playlists/4Vm8iih2i2K6iXuPev61Il/tracks`, {
+            headers: { 'Authorization': `Bearer ${spotifyAccessToken}` }
+        });
+        
+        if (!response.ok) {
+            throw new Error('Error en la respuesta de Spotify');
+        }
+        
+        const data = await response.json();
+        const tracks = data.items.map(item => item.track);
+        
+        // Mostrar lista de canciones con mejor formato
+        const playlistHTML = tracks.map(track => `
+            <div class="track-item">
+                <div class="track-info">
+                    <strong>${track.name}</strong>
+                    <small>${track.artists.map(a => a.name).join(", ")}</small>
+                </div>
+                ${track.preview_url ? 
+                    `<button onclick="playPreview('${track.preview_url}')" class="preview-btn">
+                        <i class="fas fa-play"></i> Preview
+                    </button>` : ''
+                }
+                <a href="${track.external_urls.spotify}" target="_blank" class="spotify-btn">
+                    <i class="fab fa-spotify"></i> Escuchar
+                </a>
+            </div>
+        `).join('');
+        
+        document.getElementById('playlistTitles').innerHTML = playlistHTML;
+    } catch (error) {
+        console.error('Error cargando playlist', error);
+        document.getElementById('playlistTitles').innerHTML = `
+            <div class="track-item">
+                <span>No se pudo cargar la playlist completa. Por favor, usa la app de Spotify.</span>
+                <a href="https://open.spotify.com/playlist/4Vm8iih2i2K6iXuPev61Il" target="_blank" class="btn">
+                    Abrir en Spotify
+                </a>
+            </div>
+        `;
+    }
+}
 // Reproducir previsualización
 function playPreview(previewUrl) {
   const player = document.getElementById('audioPlayer');
