@@ -289,35 +289,113 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
       <h4>¡PLAYLIST!</h4>
       <p>Disfruta de nuestra playlist y sugiere canciones para la fiesta</p>
 
-      <!-- Reproductor principal -->
+      <!-- Reproductor para invitados -->
       <div class="music-player">
-        <div class="spotify-embed-guest">
-          <iframe src="https://open.spotify.com/embed/playlist/4Vm8iih2i2K6iXuPev61Il?utm_source=generator&theme=0" 
-                  width="100%" 
-                  height="380" 
-                  frameborder="0" 
-                  allowfullscreen="" 
-                  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
-                  loading="lazy"
-                  style="border-radius: 12px;">
-          </iframe>
-        </div>
+       <div class="spotify-embed-guest">
+        <iframe 
+        src="https://open.spotify.com/embed/playlist/4Vm8iih2i2K6iXuPev61Il?utm_source=generator&theme=0" 
+        width="100%" 
+        height="380" 
+        frameborder="0" 
+        allowfullscreen="" 
+        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+        loading="lazy"
+        style="border-radius: 12px;">
+      </iframe>
+    </div>
+    <div id="alternativePlayer" class="hidden">
+      <audio id="audioPlayer" controls style="width: 100%; margin-top: 15px;">
+        Tu navegador no soporta el elemento de audio.
+      </audio>
+      <div id="playlistTitles"></div>
+    </div>
 
-        <!-- Reproductor alternativo (se activa solo si hay problemas) -->
-        <div id="alternativePlayer" class="hidden">
-          <div class="player-message">
-            <p>Para escuchar la playlist completa, te recomendamos:</p>
-            <a href="https://open.spotify.com/playlist/4Vm8iih2i2K6iXuPev61Il" target="_blank" class="btn spotify-btn">
-              <i class="fab fa-spotify"></i> Abrir en Spotify App
-            </a>
-            <p class="small">O escucha las previsualizaciones:</p>
-          </div>
-          <audio id="audioPlayer" controls style="width: 100%; margin-top: 10px;">
-            Tu navegador no soporta el elemento de audio.
-          </audio>
-          <div id="playlistTitles" class="track-list"></div>
-        </div>
+function checkPlayerCompatibility() {
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  
+  if (isMobile) {
+    // Ocultar iframe de Spotify después de 3 segundos si muestra "Muestra"
+    setTimeout(() => {
+      const spotifyFrame = document.querySelector('.spotify-embed-guest iframe');
+      if (spotifyFrame && spotifyFrame.contentDocument && 
+          spotifyFrame.contentDocument.body.textContent.includes("Muestra")) {
+        
+        document.querySelector('.spotify-embed-guest').classList.add('hidden');
+        document.getElementById('alternativePlayer').classList.remove('hidden');
+        loadAlternativePlaylist();
+      }
+    }, 3000);
+  }
+}
 
+// Cargar playlist alternativa
+async function loadAlternativePlaylist() {
+  try {
+    const response = await fetch('https://api.spotify.com/v1/playlists/4Vm8iih2i2K6iXuPev61Il/tracks', {
+      headers: { 'Authorization': `Bearer ${spotifyAccessToken}` }
+    });
+    
+    const data = await response.json();
+    const tracks = data.items.map(item => item.track);
+    
+    // Mostrar lista de canciones
+    const playlistHTML = tracks.map(track => `
+      <div class="track-item">
+        <span>${track.name} - ${track.artists[0].name}</span>
+        <button onclick="playPreview('${track.preview_url}')">Escuchar</button>
+      </div>
+    `).join('');
+    
+    document.getElementById('playlistTitles').innerHTML = playlistHTML;
+    
+  } catch (error) {
+    console.error("Error cargando playlist:", error);
+    document.getElementById('playlistTitles').innerHTML = 
+      '<p>No se pudo cargar la playlist completa. Usa Spotify app para escuchar.</p>';
+  }
+}
+
+// Reproducir previsualización
+function playPreview(previewUrl) {
+  const player = document.getElementById('audioPlayer');
+  player.src = previewUrl;
+  player.play();
+}
+
+// Llamar al cargar la página
+document.addEventListener('DOMContentLoaded', checkPlayerCompatibility);
+
+          /* Estilos para el reproductor alternativo */
+#alternativePlayer {
+  background: rgba(255,255,255,0.1);
+  padding: 15px;
+  border-radius: 12px;
+  margin-top: 20px;
+}
+
+.track-item {
+  padding: 10px;
+  margin: 5px 0;
+  background: rgba(255,255,255,0.05);
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.track-item button {
+  background: #1DB954;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 15px;
+  cursor: pointer;
+}
+
+.hidden {
+  display: none;
+}
+          
         <!-- Panel de colaboración -->
         <div id="collabPanel" class="hidden">
           <div id="guestOptions">
@@ -332,7 +410,7 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
               <input type="text" id="songSearch" placeholder="Busca una canción o artista...">
               <button class="search-btn" id="searchBtn">Buscar</button>
             </div>
-            <div id="searchResults" class="track-list"></div>
+            <div id="searchResults"></div>
           </div>
         </div>
 
@@ -342,8 +420,8 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
   </div>
 </section>
 
+<!-- Estilos adicionales -->
 <style>
-  /* Estilos para el reproductor */
   .music-player {
     background: rgba(255,255,255,0.05);
     border-radius: 15px;
@@ -354,80 +432,29 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
   .spotify-embed-guest iframe {
     border-radius: 10px;
     margin-bottom: 20px;
-    min-height: 380px;
-  }
-  
-  .track-list {
-    margin-top: 15px;
-    max-height: 300px;
-    overflow-y: auto;
   }
   
   .track-item {
-    padding: 10px;
-    margin: 8px 0;
     background: rgba(255,255,255,0.1);
+    padding: 10px;
     border-radius: 8px;
+    margin-bottom: 8px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    transition: all 0.3s ease;
   }
   
-  .track-item:hover {
-    background: rgba(255,255,255,0.2);
-  }
-  
-  .track-info {
-    flex: 1;
-  }
-  
-  .add-btn, .preview-btn {
+  .add-btn {
     background: #1DB954;
     color: white;
     border: none;
-    padding: 6px 12px;
+    padding: 5px 10px;
     border-radius: 15px;
     cursor: pointer;
-    margin-left: 10px;
-    font-size: 0.8em;
-    transition: all 0.2s ease;
-  }
-  
-  .add-btn:hover, .preview-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  }
-  
-  .spotify-btn {
-    background: #1DB954;
-    color: white;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin: 10px 0;
-  }
-  
-  .spotify-btn i {
-    font-size: 1.2em;
-  }
-  
-  .player-message {
-    text-align: center;
-    margin-bottom: 15px;
-  }
-  
-  .small {
-    font-size: 0.9em;
-    opacity: 0.8;
-  }
-  
-  .hidden {
-    display: none;
   }
 </style>
 
+<!-- Script de funcionalidad -->
 <script>
 // Configuración de Spotify
 const SPOTIFY_CONFIG = {
@@ -437,7 +464,7 @@ const SPOTIFY_CONFIG = {
   SCOPES: "playlist-modify-public playlist-modify-private user-read-private"
 };
 
-// Variables de estado
+// Estado de la aplicación
 let spotifyAccessToken = null;
 let isAuthenticated = false;
 
@@ -449,92 +476,9 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('connectSpotifyBtn').addEventListener('click', connectWithSpotify);
   document.getElementById('searchBtn').addEventListener('click', searchSong);
   
-  // Verificar compatibilidad del reproductor
-  checkPlayerCompatibility();
-  
   // Verificar autenticación existente
   checkSpotifyAuth();
 });
-
-// Verificar compatibilidad del reproductor
-function checkPlayerCompatibility() {
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    
-    if (isMobile) {
-        // Ocultar iframe de Spotify después de 3 segundos si muestra "Muestra"
-        setTimeout(() => {
-            const spotifyFrame = document.querySelector('.spotify-embed-guest iframe');
-            
-            try {
-                if (spotifyFrame && spotifyFrame.contentDocument && 
-                    /muestra|sample|preview/i.test(spotifyFrame.contentDocument.body.textContent)) {
-                    
-                    document.querySelector('.spotify-embed-guest').classList.add('hidden');
-                    document.getElementById('alternativePlayer').classList.remove('hidden');
-                    loadAlternativePlaylist();
-                }
-            } catch (e) {
-                // Si hay error de CORS, mostrar alternativa
-                document.querySelector('.spotify-embed-guest').classList.add('hidden');
-                document.getElementById('alternativePlayer').classList.remove('hidden');
-                loadAlternativePlaylist();
-            }
-        }, 3000);
-    }
-}
-
-async function loadAlternativePlaylist() {
-    try {
-        const response = await fetch(`https://api.spotify.com/v1/playlists/4Vm8iih2i2K6iXuPev61Il/tracks`, {
-            headers: { 'Authorization': `Bearer ${spotifyAccessToken}` }
-        });
-        
-        if (!response.ok) {
-            throw new Error('Error en la respuesta de Spotify');
-        }
-        
-        const data = await response.json();
-        const tracks = data.items.map(item => item.track);
-        
-        // Mostrar lista de canciones con mejor formato
-        const playlistHTML = tracks.map(track => `
-            <div class="track-item">
-                <div class="track-info">
-                    <strong>${track.name}</strong>
-                    <small>${track.artists.map(a => a.name).join(", ")}</small>
-                </div>
-                ${track.preview_url ? 
-                    `<button onclick="playPreview('${track.preview_url}')" class="preview-btn">
-                        <i class="fas fa-play"></i> Preview
-                    </button>` : ''
-                }
-                <a href="${track.external_urls.spotify}" target="_blank" class="spotify-btn">
-                    <i class="fab fa-spotify"></i> Escuchar
-                </a>
-            </div>
-        `).join('');
-        
-        document.getElementById('playlistTitles').innerHTML = playlistHTML;
-    } catch (error) {
-        console.error('Error cargando playlist', error);
-        document.getElementById('playlistTitles').innerHTML = `
-            <div class="track-item">
-                <span>No se pudo cargar la playlist completa. Por favor, usa la app de Spotify.</span>
-                <a href="https://open.spotify.com/playlist/4Vm8iih2i2K6iXuPev61Il" target="_blank" class="btn">
-                    Abrir en Spotify
-                </a>
-            </div>
-        `;
-    }
-}
-// Reproducir previsualización
-function playPreview(previewUrl) {
-  const player = document.getElementById('audioPlayer');
-  player.src = previewUrl;
-  player.play().catch(e => {
-    alert("No se pudo reproducir la previsualización. Intenta con otro navegador o dispositivo.");
-  });
-}
 
 // Mostrar panel de colaboración
 function showCollaborationPanel() {
@@ -547,15 +491,24 @@ function openSuggestionForm() {
   window.open("https://docs.google.com/forms/d/e/1FAIpQLSflLqhwmhvp2uNeFbliUVQFj3Yhgkko3xh0nRF-6A47T-aCKg/viewform", "_blank");
 }
 
+    function isMobileDevice() {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+    
 // Conectar con Spotify
 function connectWithSpotify() {
-  const scopes = encodeURIComponent(SPOTIFY_CONFIG.SCOPES.split(' ').join(' '));
-  const authUrl = `https://accounts.spotify.com/authorize?client_id=${SPOTIFY_CONFIG.CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(SPOTIFY_CONFIG.REDIRECT_URI)}&scope=${scopes}&show_dialog=true`;
+  const authUrl = `https://accounts.spotify.com/authorize?client_id=${SPOTIFY_CONFIG.CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(SPOTIFY_CONFIG.REDIRECT_URI)}&scope=${encodeURIComponent(SPOTIFY_CONFIG.SCOPES)}&show_dialog=true`;
   
-  window.location.href = authUrl;
+  // Solución especial para PC
+  if (!isMobileDevice()) {
+    window.open(authUrl, '_blank', 'width=500,height=600');
+  } else {
+    window.location.href = authUrl;
+  }
 }
 
-// Verificar autenticación existente
+// Verificar autenticación
+// Modificar la función checkSpotifyAuth
 function checkSpotifyAuth() {
   const hash = window.location.hash.substring(1);
   const params = new URLSearchParams(hash);
@@ -564,15 +517,21 @@ function checkSpotifyAuth() {
   if (token) {
     spotifyAccessToken = token;
     isAuthenticated = true;
+    
+    // Almacenar en sessionStorage para PC
+    if (!isMobileDevice()) {
+      sessionStorage.setItem('spotifyToken', token);
+    }
+    
     window.history.replaceState({}, document.title, window.location.pathname);
     setupAuthenticatedFeatures();
-  } else if (sessionStorage.getItem('spotifyToken')) {
+  } else if (!isMobileDevice() && sessionStorage.getItem('spotifyToken')) {
+    // Recuperar token para PC
     spotifyAccessToken = sessionStorage.getItem('spotifyToken');
     validateToken();
   }
 }
 
-// Validar token
 async function validateToken() {
   try {
     const response = await fetch("https://api.spotify.com/v1/me", {
@@ -590,47 +549,31 @@ async function validateToken() {
     sessionStorage.removeItem('spotifyToken');
   }
 }
-
 // Configurar características para usuarios autenticados
 function setupAuthenticatedFeatures() {
   document.getElementById('guestOptions').classList.add('hidden');
   document.getElementById('spotifyAuthSection').classList.remove('hidden');
   document.getElementById('connectSpotifyBtn').textContent = "✅ Conectado";
   document.getElementById('connectSpotifyBtn').style.background = "#28a745";
-  
-  // Almacenar token para PC
-  if (!isMobileDevice()) {
-    sessionStorage.setItem('spotifyToken', spotifyAccessToken);
-  }
 }
 
 // Buscar canciones
 async function searchSong() {
   const query = document.getElementById('songSearch').value.trim();
-  if (!query) {
-    alert("Por favor ingresa un término de búsqueda");
-    return;
-  }
+  if (!query) return;
 
   try {
     const response = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=5`, {
       headers: { 'Authorization': `Bearer ${spotifyAccessToken}` }
     });
     
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error?.message || "Error en la búsqueda");
-    }
+    if (!response.ok) throw new Error("Error en la búsqueda");
     
     const data = await response.json();
     displayResults(data.tracks.items);
   } catch (error) {
     console.error("Error:", error);
-    alert(`Error al buscar canciones: ${error.message}`);
-    
-    if (error.message.includes("401")) {
-      resetAuth();
-    }
+    alert("Error al buscar canciones. Intenta nuevamente.");
   }
 }
 
@@ -643,13 +586,11 @@ function displayResults(tracks) {
     const trackDiv = document.createElement('div');
     trackDiv.className = 'track-item';
     trackDiv.innerHTML = `
-      <div class="track-info">
-        <strong>${track.name}</strong>
+      <div>
+        <strong>${track.name}</strong><br>
         <small>${track.artists.map(a => a.name).join(", ")}</small>
       </div>
-      <button class="add-btn" data-uri="${track.uri}">
-        <i class="fas fa-plus"></i> Agregar
-      </button>
+      <button class="add-btn" data-uri="${track.uri}">Agregar</button>
     `;
     resultsDiv.appendChild(trackDiv);
   });
@@ -662,52 +603,72 @@ function displayResults(tracks) {
   });
 }
 
-// Función para agregar a la playlist
+// Función para agregar a la playlist (CORREGIDA)
 async function addToPlaylist(trackUri, button) {
-  if (!button) button = document.createElement('button');
+  if (!button) button = document.createElement('button'); // Para compatibilidad con PC
   
   button.disabled = true;
-  button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Agregando...';
+  button.textContent = "Agregando...";
   
   try {
-    const response = await fetch(`https://api.spotify.com/v1/playlists/${SPOTIFY_CONFIG.PLAYLIST_ID}/tracks`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${spotifyAccessToken}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        uris: [trackUri],
-        position: 0
-      })
-    });
+    // Verificar conexión primero
+    if (!navigator.onLine) {
+      throw new Error("No hay conexión a internet");
+    }
+
+    // Verificar token
+    const tokenValid = await validateToken();
+    if (!tokenValid) {
+      throw new Error("Sesión expirada");
+    }
+
+    // Llamada a la API
+    const response = await makeSpotifyRequest(
+      `https://api.spotify.com/v1/playlists/${SPOTIFY_CONFIG.PLAYLIST_ID}/tracks`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ uris: [trackUri], position: 0 })
+      }
+    );
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.error?.message || "Error al agregar canción");
+      throw new Error(error.error?.message || "Error al agregar");
     }
 
-    button.innerHTML = '<i class="fas fa-check"></i> Agregada';
-    setTimeout(() => {
-      button.innerHTML = '<i class="fas fa-plus"></i> Agregar';
+    // Éxito - diferente feedback para PC/móvil
+    if (isMobileDevice()) {
+      button.textContent = "✅ Agregada";
+      setTimeout(() => {
+        button.textContent = "Agregar";
+        button.disabled = false;
+      }, 2000);
+    } else {
+      alert("Canción agregada exitosamente!");
+      button.textContent = "Agregar";
       button.disabled = false;
-    }, 2000);
-    
+    }
+
     refreshPlayer();
-    
+
   } catch (error) {
     console.error("Error:", error);
-    button.innerHTML = '<i class="fas fa-times"></i> Error';
-    setTimeout(() => {
-      button.innerHTML = '<i class="fas fa-plus"></i> Agregar';
-      button.disabled = false;
-    }, 2000);
     
-    if (error.message.includes("401") || error.message.includes("token")) {
-      resetAuth();
+    if (isMobileDevice()) {
+      button.textContent = "Error";
+      setTimeout(() => {
+        button.textContent = "Agregar";
+        button.disabled = false;
+      }, 2000);
+    } else {
+      alert(`Error: ${error.message}`);
+      button.textContent = "Agregar";
+      button.disabled = false;
     }
     
-    alert(`Error al agregar canción: ${error.message}`);
+    if (error.message.includes("token") || error.message.includes("401")) {
+      resetAuth();
+    }
   }
 }
 
@@ -723,16 +684,10 @@ function refreshPlayer() {
 function resetAuth() {
   spotifyAccessToken = null;
   isAuthenticated = false;
-  sessionStorage.removeItem('spotifyToken');
   document.getElementById('spotifyAuthSection').classList.add('hidden');
   document.getElementById('guestOptions').classList.remove('hidden');
   document.getElementById('connectSpotifyBtn').textContent = "Conectar con Spotify";
   document.getElementById('connectSpotifyBtn').style.background = "";
-}
-
-// Detectar dispositivo móvil
-function isMobileDevice() {
-  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 }
 </script>
 </section>
