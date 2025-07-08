@@ -437,7 +437,7 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
     </style>
    
 <!-- Sección de Música -->
- <!-- Sección de Música (modificada) -->
+ <!-- Sección de Música -->
     <section class="canciones">
         <div class="container">
             <img src="assets/img/icono-canciones.svg" alt="" class="bounce-in">
@@ -498,6 +498,15 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
         </div>
     </section>
 
+    <!-- Ventana emergente para autenticación -->
+    <div id="authPopup" class="hidden">
+        <button class="close-btn" id="closeAuthPopup">X</button>
+        <iframe id="authIframe" src=""></iframe>
+    </div>
+    
+    <!-- Overlay para fondo oscuro -->
+    <div class="overlay" id="authOverlay"></div>
+
     <script>
     // Configuración de Spotify
     const SPOTIFY_CONFIG = {
@@ -519,6 +528,7 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
         document.getElementById('suggestBtn').addEventListener('click', openSuggestionForm);
         document.getElementById('connectSpotifyBtn').addEventListener('click', connectWithSpotify);
         document.getElementById('searchBtn').addEventListener('click', searchSong);
+        document.getElementById('closeAuthPopup').addEventListener('click', closeAuthPopup);
         
         // Verificar compatibilidad del reproductor
         checkPlayerCompatibility();
@@ -528,6 +538,9 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
         
         // Escuchar mensajes de la ventana de autenticación
         window.addEventListener('message', handleAuthMessage);
+        
+        // Escuchar cambios en el hash de la URL
+        window.addEventListener('hashchange', checkSpotifyAuth);
     });
 
     // Función para verificar compatibilidad del reproductor
@@ -628,7 +641,7 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
         window.open("https://docs.google.com/forms/d/e/1FAIpQLSflLqhwmhvp2uNeFbliUVQFj3Yhgkko3xh0nRF-6A47T-aCKg/viewform", "_blank");
     }
 
-    // Conectar con Spotify - SOLUCIÓN DEFINITIVA PARA PC
+    // Conectar con Spotify - SOLUCIÓN DEFINITIVA
     function connectWithSpotify() {
         // Construir URL de autorización
         const authUrl = `https://accounts.spotify.com/authorize?client_id=${SPOTIFY_CONFIG.CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(SPOTIFY_CONFIG.REDIRECT_URI)}&scope=${encodeURIComponent(SPOTIFY_CONFIG.SCOPES)}&show_dialog=true`;
@@ -639,17 +652,52 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
             return;
         }
         
-        // Para PC: usar comunicación entre ventanas con página intermedia
-        const width = 500, height = 600;
-        const left = (window.innerWidth - width) / 2;
-        const top = (window.innerHeight - height) / 2;
+        // Para PC: mostrar ventana emergente integrada
+        showAuthPopup(authUrl);
+    }
+
+    // Mostrar ventana emergente de autenticación
+    function showAuthPopup(authUrl) {
+        const popup = document.getElementById('authPopup');
+        const overlay = document.getElementById('authOverlay');
+        const iframe = document.getElementById('authIframe');
         
-        // Abrir ventana emergente con página de redirección
-        authWindow = window.open(
-            `${window.location.origin}/spotify-redirect.html?redirect=${encodeURIComponent(SPOTIFY_CONFIG.REDIRECT_URI)}`, 
-            'SpotifyAuth', 
-            `width=${width},height=${height},top=${top},left=${left}`
-        );
+        iframe.src = authUrl;
+        popup.classList.remove('hidden');
+        overlay.classList.remove('hidden');
+        
+        // Verificar periódicamente si la autenticación se completó
+        const checkAuthComplete = setInterval(() => {
+            try {
+                // Verificar si el iframe ha sido redirigido a nuestra página
+                if (iframe.contentWindow.location.href.startsWith(SPOTIFY_CONFIG.REDIRECT_URI)) {
+                    // Extraer token del hash
+                    const hash = iframe.contentWindow.location.hash.substring(1);
+                    const params = new URLSearchParams(hash);
+                    const token = params.get('access_token');
+                    
+                    if (token) {
+                        // Autenticación exitosa
+                        handleNewToken(token);
+                        closeAuthPopup();
+                        clearInterval(checkAuthComplete);
+                    }
+                }
+            } catch (e) {
+                // Ignorar errores de CORS
+            }
+        }, 500);
+    }
+
+    // Cerrar ventana emergente de autenticación
+    function closeAuthPopup() {
+        const popup = document.getElementById('authPopup');
+        const overlay = document.getElementById('authOverlay');
+        const iframe = document.getElementById('authIframe');
+        
+        iframe.src = '';
+        popup.classList.add('hidden');
+        overlay.classList.add('hidden');
     }
 
     // Verificar si es dispositivo móvil
@@ -829,35 +877,6 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
         document.getElementById('connectSpotifyBtn').textContent = "Conectar con Spotify";
         document.getElementById('connectSpotifyBtn').style.background = "";
         showAuthStatus("La sesión expiró. Por favor, conéctate de nuevo.", false);
-    }
-
-    // Manejar mensajes de autenticación
-    function handleAuthMessage(event) {
-        // Solo aceptar mensajes de nuestro propio origen
-        if (event.origin !== window.location.origin) return;
-        
-        if (event.data.type === 'SPOTIFY_AUTH_SUCCESS') {
-            handleNewToken(event.data.token);
-            showPopupMessage("¡Autenticación exitosa! Ya puedes sugerir canciones.");
-        }
-    }
-
-    // Mostrar mensaje emergente
-    function showPopupMessage(message) {
-        const popup = document.createElement('div');
-        popup.className = 'popup-message';
-        popup.innerHTML = `
-            <p>${message}</p>
-            <button onclick="this.parentElement.remove()">Cerrar</button>
-        `;
-        document.body.appendChild(popup);
-        
-        // Cerrar automáticamente después de 5 segundos
-        setTimeout(() => {
-            if (popup.parentNode) {
-                popup.remove();
-            }
-        }, 5000);
     }
 </script>
 </section>
