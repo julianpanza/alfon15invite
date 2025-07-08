@@ -661,37 +661,30 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
     }
 
     // Mostrar ventana emergente de autenticación
-    function showAuthPopup(authUrl) {
-        const popup = document.getElementById('authPopup');
-        const overlay = document.getElementById('authOverlay');
-        const iframe = document.getElementById('authIframe');
-        
-        iframe.src = authUrl;
-        popup.classList.remove('hidden');
-        overlay.classList.remove('hidden');
-        
-        // Verificar periódicamente si la autenticación se completó
-        const checkAuthComplete = setInterval(() => {
-            try {
-                // Verificar si el iframe ha sido redirigido a nuestra página
-                if (iframe.contentWindow.location.href.startsWith(SPOTIFY_CONFIG.REDIRECT_URI)) {
-                    // Extraer token del hash
-                    const hash = iframe.contentWindow.location.hash.substring(1);
-                    const params = new URLSearchParams(hash);
-                    const token = params.get('access_token');
-                    
-                    if (token) {
-                        // Autenticación exitosa
-                        handleNewToken(token);
-                        closeAuthPopup();
-                        clearInterval(checkAuthComplete);
-                    }
+   function showAuthPopup(authUrl) {
+    authWindow = window.open(authUrl, 'Spotify Login', 'width=500,height=700');
+
+    const checkAuthComplete = setInterval(() => {
+        if (!authWindow || authWindow.closed) {
+            clearInterval(checkAuthComplete);
+            return;
+        }
+        try {
+            const hash = authWindow.location.hash;
+            if (hash && hash.includes('access_token')) {
+                const params = new URLSearchParams(hash.substring(1));
+                const token = params.get('access_token');
+                if (token) {
+                    handleNewToken(token);
+                    authWindow.close();
+                    clearInterval(checkAuthComplete);
                 }
-            } catch (e) {
-                // Ignorar errores de CORS
             }
-        }, 500);
-    }
+        } catch (e) {
+            // CORS: no hacer nada
+        }
+    }, 500);
+}
 
     // Cerrar ventana emergente de autenticación
     function closeAuthPopup() {
