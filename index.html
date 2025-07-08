@@ -6,7 +6,7 @@
 
     
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="description" content="invitaciones digitales para eventos">
 <meta name="keywords" content="invitaciones, digitales, tarjetas, boda, invitación, interactivas, casamiento, save the date, agenda la fecha, ideas invitación, tarjetas de 15, tarjetas eventos, wedding, matrimonio, ideas tarjetas, rsvp, modelos de invitacion, página de boda, página web de casamiento">
 
@@ -395,16 +395,24 @@ function openSuggestionForm() {
   window.open("https://docs.google.com/forms/d/e/1FAIpQLSflLqhwmhvp2uNeFbliUVQFj3Yhgkko3xh0nRF-6A47T-aCKg/viewform", "_blank");
 }
 
+    function isMobileDevice() {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+    
 // Conectar con Spotify
 function connectWithSpotify() {
-  // Codifica los scopes correctamente
-  const scopes = encodeURIComponent(SPOTIFY_CONFIG.SCOPES.split(' ').join(' '));
+  const authUrl = `https://accounts.spotify.com/authorize?client_id=${SPOTIFY_CONFIG.CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(SPOTIFY_CONFIG.REDIRECT_URI)}&scope=${encodeURIComponent(SPOTIFY_CONFIG.SCOPES)}&show_dialog=true`;
   
-  const authUrl = `https://accounts.spotify.com/authorize?client_id=${SPOTIFY_CONFIG.CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(SPOTIFY_CONFIG.REDIRECT_URI)}&scope=${scopes}&show_dialog=true`;
-  window.location.href = authUrl;
+  // Solución especial para PC
+  if (!isMobileDevice()) {
+    window.open(authUrl, '_blank', 'width=500,height=600');
+  } else {
+    window.location.href = authUrl;
+  }
 }
 
 // Verificar autenticación
+// Modificar la función checkSpotifyAuth
 function checkSpotifyAuth() {
   const hash = window.location.hash.substring(1);
   const params = new URLSearchParams(hash);
@@ -413,11 +421,38 @@ function checkSpotifyAuth() {
   if (token) {
     spotifyAccessToken = token;
     isAuthenticated = true;
+    
+    // Almacenar en sessionStorage para PC
+    if (!isMobileDevice()) {
+      sessionStorage.setItem('spotifyToken', token);
+    }
+    
     window.history.replaceState({}, document.title, window.location.pathname);
     setupAuthenticatedFeatures();
+  } else if (!isMobileDevice() && sessionStorage.getItem('spotifyToken')) {
+    // Recuperar token para PC
+    spotifyAccessToken = sessionStorage.getItem('spotifyToken');
+    validateToken();
   }
 }
 
+async function validateToken() {
+  try {
+    const response = await fetch("https://api.spotify.com/v1/me", {
+      headers: { 'Authorization': `Bearer ${spotifyAccessToken}` }
+    });
+    
+    if (response.ok) {
+      isAuthenticated = true;
+      setupAuthenticatedFeatures();
+    } else {
+      sessionStorage.removeItem('spotifyToken');
+    }
+  } catch (error) {
+    console.error("Error validando token:", error);
+    sessionStorage.removeItem('spotifyToken');
+  }
+}
 // Configurar características para usuarios autenticados
 function setupAuthenticatedFeatures() {
   document.getElementById('guestOptions').classList.add('hidden');
@@ -474,61 +509,69 @@ function displayResults(tracks) {
 
 // Función para agregar a la playlist (CORREGIDA)
 async function addToPlaylist(trackUri, button) {
+  if (!button) button = document.createElement('button'); // Para compatibilidad con PC
+  
   button.disabled = true;
   button.textContent = "Agregando...";
   
   try {
-    // Verificar permisos primero
-    const meResponse = await fetch('https://api.spotify.com/v1/me', {
-      headers: { 'Authorization': `Bearer ${spotifyAccessToken}` }
-    });
-    
-    if (!meResponse.ok) {
-      throw new Error("Token inválido o expirado");
+    // Verificar conexión primero
+    if (!navigator.onLine) {
+      throw new Error("No hay conexión a internet");
     }
 
-    // Luego agregar la canción
-    const addResponse = await fetch(
+    // Verificar token
+    const tokenValid = await validateToken();
+    if (!tokenValid) {
+      throw new Error("Sesión expirada");
+    }
+
+    // Llamada a la API
+    const response = await makeSpotifyRequest(
       `https://api.spotify.com/v1/playlists/${SPOTIFY_CONFIG.PLAYLIST_ID}/tracks`,
       {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${spotifyAccessToken}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          uris: [trackUri],
-          position: 0
-        })
+        body: JSON.stringify({ uris: [trackUri], position: 0 })
       }
     );
 
-    if (!addResponse.ok) {
-      const errorData = await addResponse.json();
-      throw new Error(errorData.error?.message || "Error al agregar canción");
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error?.message || "Error al agregar");
     }
 
-    button.textContent = "✅ Agregada";
-    setTimeout(() => {
+    // Éxito - diferente feedback para PC/móvil
+    if (isMobileDevice()) {
+      button.textContent = "✅ Agregada";
+      setTimeout(() => {
+        button.textContent = "Agregar";
+        button.disabled = false;
+      }, 2000);
+    } else {
+      alert("Canción agregada exitosamente!");
       button.textContent = "Agregar";
       button.disabled = false;
-    }, 2000);
-    
+    }
+
     refreshPlayer();
-    
+
   } catch (error) {
     console.error("Error:", error);
-    button.textContent = "Error";
-    setTimeout(() => {
-      button.textContent = "Agregar";
-      button.disabled = false;
-    }, 2000);
     
-    if (error.message.includes("insufficient_scope")) {
-      alert("Necesitas reconectarte para otorgar los permisos necesarios");
-      resetAuth();
+    if (isMobileDevice()) {
+      button.textContent = "Error";
+      setTimeout(() => {
+        button.textContent = "Agregar";
+        button.disabled = false;
+      }, 2000);
     } else {
       alert(`Error: ${error.message}`);
+      button.textContent = "Agregar";
+      button.disabled = false;
+    }
+    
+    if (error.message.includes("token") || error.message.includes("401")) {
+      resetAuth();
     }
   }
 }
