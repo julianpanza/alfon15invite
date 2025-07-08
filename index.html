@@ -365,7 +365,7 @@ const SPOTIFY_CONFIG = {
   CLIENT_ID: "d950ae09b4e14eb0b82b70151b1dcb82",
   REDIRECT_URI: window.location.href,
   PLAYLIST_ID: "4Vm8iih2i2K6iXuPev61Il",
-  SCOPES: "playlist-modify-public user-read-private"
+  SCOPES: "playlist-modify-public playlist-modify-private user-read-private"
 };
 
 // Estado de la aplicación
@@ -397,7 +397,10 @@ function openSuggestionForm() {
 
 // Conectar con Spotify
 function connectWithSpotify() {
-  const authUrl = `https://accounts.spotify.com/authorize?client_id=${SPOTIFY_CONFIG.CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(SPOTIFY_CONFIG.REDIRECT_URI)}&scope=${encodeURIComponent(SPOTIFY_CONFIG.SCOPES)}&show_dialog=true`;
+  // Codifica los scopes correctamente
+  const scopes = encodeURIComponent(SPOTIFY_CONFIG.SCOPES.split(' ').join(' '));
+  
+  const authUrl = `https://accounts.spotify.com/authorize?client_id=${SPOTIFY_CONFIG.CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(SPOTIFY_CONFIG.REDIRECT_URI)}&scope=${scopes}&show_dialog=true`;
   window.location.href = authUrl;
 }
 
@@ -475,42 +478,44 @@ async function addToPlaylist(trackUri, button) {
   button.textContent = "Agregando...";
   
   try {
-    // 1. Verificar permisos
-    const playlistResponse = await fetch(`https://api.spotify.com/v1/playlists/${SPOTIFY_CONFIG.PLAYLIST_ID}`, {
+    // Verificar permisos primero
+    const meResponse = await fetch('https://api.spotify.com/v1/me', {
       headers: { 'Authorization': `Bearer ${spotifyAccessToken}` }
     });
     
-    if (!playlistResponse.ok) {
-      throw new Error("No se pudo acceder a la playlist");
+    if (!meResponse.ok) {
+      throw new Error("Token inválido o expirado");
     }
-    
-    // 2. Agregar canción
-    const addResponse = await fetch(`https://api.spotify.com/v1/playlists/${SPOTIFY_CONFIG.PLAYLIST_ID}/tracks`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${spotifyAccessToken}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        uris: [trackUri],
-        position: 0
-      })
-    });
-    
+
+    // Luego agregar la canción
+    const addResponse = await fetch(
+      `https://api.spotify.com/v1/playlists/${SPOTIFY_CONFIG.PLAYLIST_ID}/tracks`,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${spotifyAccessToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          uris: [trackUri],
+          position: 0
+        })
+      }
+    );
+
     if (!addResponse.ok) {
       const errorData = await addResponse.json();
       throw new Error(errorData.error?.message || "Error al agregar canción");
     }
-    
-    // 3. Confirmación
+
     button.textContent = "✅ Agregada";
     setTimeout(() => {
       button.textContent = "Agregar";
       button.disabled = false;
     }, 2000);
     
-    // 4. Actualizar reproductor
     refreshPlayer();
+    
   } catch (error) {
     console.error("Error:", error);
     button.textContent = "Error";
@@ -519,13 +524,11 @@ async function addToPlaylist(trackUri, button) {
       button.disabled = false;
     }, 2000);
     
-    if (error.message.includes("401")) {
-      alert("Tu sesión ha expirado. Por favor, vuelve a conectarte.");
+    if (error.message.includes("insufficient_scope")) {
+      alert("Necesitas reconectarte para otorgar los permisos necesarios");
       resetAuth();
-    } else if (error.message.includes("403")) {
-      alert("No tienes permisos para modificar esta playlist.");
     } else {
-      alert("Error al agregar canción: " + error.message);
+      alert(`Error: ${error.message}`);
     }
   }
 }
