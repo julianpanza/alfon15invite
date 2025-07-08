@@ -283,7 +283,7 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
 
    
 <!-- Sección de Música -->
-<!-- Sección de Música (modificada) -->
+  <!-- Sección de Música (modificada) -->
     <section class="canciones">
         <div class="container">
             <img src="assets/img/icono-canciones.svg" alt="" class="bounce-in">
@@ -348,7 +348,7 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
     // Configuración de Spotify
     const SPOTIFY_CONFIG = {
         CLIENT_ID: "d950ae09b4e14eb0b82b70151b1dcb82",
-        REDIRECT_URI: window.location.href.split('?')[0], // Usar URL base sin parámetros
+        REDIRECT_URI: window.location.href.split('#')[0], // Usar URL base sin fragmento
         PLAYLIST_ID: "4Vm8iih2i2K6iXuPev61Il",
         SCOPES: "playlist-modify-public playlist-modify-private user-read-private"
     };
@@ -356,6 +356,7 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
     // Estado de la aplicación
     let spotifyAccessToken = null;
     let isAuthenticated = false;
+    let authWindow = null;
 
     // Inicialización
     document.addEventListener('DOMContentLoaded', function() {
@@ -370,6 +371,12 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
         
         // Verificar autenticación existente
         checkSpotifyAuth();
+        
+        // Escuchar mensajes de la ventana de autenticación
+        window.addEventListener('message', handleAuthMessage);
+        
+        // Escuchar cambios en el almacenamiento local
+        window.addEventListener('storage', handleStorageChange);
     });
 
     // Función para verificar compatibilidad del reproductor
@@ -470,35 +477,37 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
         window.open("https://docs.google.com/forms/d/e/1FAIpQLSflLqhwmhvp2uNeFbliUVQFj3Yhgkko3xh0nRF-6A47T-aCKg/viewform", "_blank");
     }
 
-    // Conectar con Spotify
+    // Conectar con Spotify - SOLUCIÓN PARA PC
     function connectWithSpotify() {
         // Construir URL de autorización
         const authUrl = `https://accounts.spotify.com/authorize?client_id=${SPOTIFY_CONFIG.CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(SPOTIFY_CONFIG.REDIRECT_URI)}&scope=${encodeURIComponent(SPOTIFY_CONFIG.SCOPES)}&show_dialog=true`;
         
-        // Solución para PC: abrir en ventana emergente
-        if (!isMobileDevice()) {
-            const width = 500, height = 600;
-            const left = (window.innerWidth - width) / 2;
-            const top = (window.innerHeight - height) / 2;
-            
-            const authWindow = window.open(
-                authUrl, 
-                'SpotifyAuth', 
-                `width=${width},height=${height},top=${top},left=${left}`
-            );
-            
-            // Verificar periódicamente si la ventana se cerró
-            const checkAuthWindow = setInterval(() => {
-                if (authWindow.closed) {
-                    clearInterval(checkAuthWindow);
-                    checkSpotifyAuth();
-                }
-            }, 500);
-        } 
         // Para móviles, redirigir en la misma ventana
-        else {
+        if (isMobileDevice()) {
             window.location.href = authUrl;
+            return;
         }
+        
+        // Para PC: usar comunicación entre ventanas
+        const width = 500, height = 600;
+        const left = (window.innerWidth - width) / 2;
+        const top = (window.innerHeight - height) / 2;
+        
+        // Abrir ventana emergente
+        authWindow = window.open(
+            authUrl, 
+            'SpotifyAuth', 
+            `width=${width},height=${height},top=${top},left=${left}`
+        );
+        
+        // Comprobar periódicamente si la ventana se cerró
+        const checkAuthWindow = setInterval(() => {
+            if (authWindow.closed) {
+                clearInterval(checkAuthWindow);
+                // Verificar si tenemos token en localStorage
+                checkLocalStorageForToken();
+            }
+        }, 500);
     }
 
     // Verificar si es dispositivo móvil
@@ -517,25 +526,30 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
             window.history.replaceState({}, document.title, window.location.pathname);
             
             // Almacenar el token
-            spotifyAccessToken = token;
-            isAuthenticated = true;
-            
-            // Guardar en sessionStorage para PC
-            if (!isMobileDevice()) {
-                sessionStorage.setItem('spotifyToken', token);
-            }
-            
-            // Configurar características para usuario autenticado
-            setupAuthenticatedFeatures();
+            handleNewToken(token);
             
             // Mostrar mensaje de éxito
             showAuthStatus("¡Autenticación exitosa! Ya puedes sugerir canciones.", true);
         } 
         // Verificar si hay token almacenado (para PC)
-        else if (!isMobileDevice() && sessionStorage.getItem('spotifyToken')) {
-            spotifyAccessToken = sessionStorage.getItem('spotifyToken');
+        else if (localStorage.getItem('spotifyToken')) {
+            spotifyAccessToken = localStorage.getItem('spotifyToken');
             validateToken();
         }
+    }
+
+    // Manejar nuevo token
+    function handleNewToken(token) {
+        spotifyAccessToken = token;
+        isAuthenticated = true;
+        
+        // Guardar en localStorage para PC
+        if (!isMobileDevice()) {
+            localStorage.setItem('spotifyToken', token);
+        }
+        
+        // Configurar características para usuario autenticado
+        setupAuthenticatedFeatures();
     }
 
     // Validar token
@@ -550,12 +564,12 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
                 setupAuthenticatedFeatures();
                 showAuthStatus("Sesión recuperada. Ya puedes sugerir canciones.", true);
             } else {
-                sessionStorage.removeItem('spotifyToken');
+                localStorage.removeItem('spotifyToken');
                 showAuthStatus("La sesión expiró. Por favor, conéctate de nuevo.", false);
             }
         } catch (error) {
             console.error("Error validando token:", error);
-            sessionStorage.removeItem('spotifyToken');
+            localStorage.removeItem('spotifyToken');
             showAuthStatus("Error al validar la sesión. Intenta de nuevo.", false);
         }
     }
@@ -700,12 +714,58 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
     function resetAuth() {
         spotifyAccessToken = null;
         isAuthenticated = false;
-        sessionStorage.removeItem('spotifyToken');
+        localStorage.removeItem('spotifyToken');
         document.getElementById('spotifyAuthSection').classList.add('hidden');
         document.getElementById('guestOptions').classList.remove('hidden');
         document.getElementById('connectSpotifyBtn').textContent = "Conectar con Spotify";
         document.getElementById('connectSpotifyBtn').style.background = "";
         showAuthStatus("La sesión expiró. Por favor, conéctate de nuevo.", false);
+    }
+
+    // Manejar mensajes de autenticación
+    function handleAuthMessage(event) {
+        // Solo aceptar mensajes de nuestro propio origen
+        if (event.origin !== window.location.origin) return;
+        
+        if (event.data.type === 'SPOTIFY_AUTH_SUCCESS') {
+            handleNewToken(event.data.token);
+            showPopupMessage("¡Autenticación exitosa! Ya puedes sugerir canciones.");
+        }
+    }
+
+    // Manejar cambios en localStorage
+    function handleStorageChange(event) {
+        if (event.key === 'spotifyToken' && event.newValue) {
+            spotifyAccessToken = event.newValue;
+            validateToken();
+        }
+    }
+
+    // Verificar localStorage en busca del token
+    function checkLocalStorageForToken() {
+        const token = localStorage.getItem('spotifyToken');
+        if (token) {
+            handleNewToken(token);
+            showAuthStatus("Sesión recuperada. Ya puedes sugerir canciones.", true);
+        }
+    }
+
+    // Mostrar mensaje emergente
+    function showPopupMessage(message) {
+        const popup = document.createElement('div');
+        popup.className = 'popup-message';
+        popup.innerHTML = `
+            <p>${message}</p>
+            <button onclick="this.parentElement.remove()">Cerrar</button>
+        `;
+        document.body.appendChild(popup);
+        
+        // Cerrar automáticamente después de 5 segundos
+        setTimeout(() => {
+            if (popup.parentNode) {
+                popup.remove();
+            }
+        }, 5000);
     }
 </script>
 </section>
