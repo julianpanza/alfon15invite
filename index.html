@@ -280,10 +280,164 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
 
 
 </section>
-
+<style>
+        /* Estilos mejorados para la sección de música */
+        .music-player {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .spotify-embed-guest iframe {
+            border-radius: 10px;
+            margin-bottom: 20px;
+            min-height: 380px;
+        }
+        
+        .track-list {
+            margin-top: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .track-item {
+            padding: 10px;
+            margin: 8px 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .track-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .track-info {
+            flex: 1;
+        }
+        
+        .add-btn, .preview-btn {
+            background: #1DB954;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 15px;
+            cursor: pointer;
+            margin-left: 10px;
+            font-size: 0.8em;
+            transition: all 0.2s ease;
+        }
+        
+        .add-btn:hover, .preview-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .spotify-btn {
+            background: #1DB954;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 10px 0;
+        }
+        
+        .spotify-btn i {
+            font-size: 1.2em;
+        }
+        
+        .player-message {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .small {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .auth-status {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .auth-success {
+            background: rgba(40, 167, 69, 0.2);
+            border: 1px solid #28a745;
+        }
+        
+        .auth-error {
+            background: rgba(220, 53, 69, 0.2);
+            border: 1px solid #dc3545;
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .search-box input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+        }
+        
+        .search-btn {
+            background: #1DB954;
+            color: white;
+            border: none;
+            padding: 0 15px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        .popup-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.85);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            z-index: 1000;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5);
+            max-width: 80%;
+        }
+        
+        .popup-message button {
+            background: #1DB954;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            margin-top: 15px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+    </style>
    
 <!-- Sección de Música -->
-  <!-- Sección de Música (modificada) -->
+ <!-- Sección de Música (modificada) -->
     <section class="canciones">
         <div class="container">
             <img src="assets/img/icono-canciones.svg" alt="" class="bounce-in">
@@ -374,9 +528,6 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
         
         // Escuchar mensajes de la ventana de autenticación
         window.addEventListener('message', handleAuthMessage);
-        
-        // Escuchar cambios en el almacenamiento local
-        window.addEventListener('storage', handleStorageChange);
     });
 
     // Función para verificar compatibilidad del reproductor
@@ -477,7 +628,7 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
         window.open("https://docs.google.com/forms/d/e/1FAIpQLSflLqhwmhvp2uNeFbliUVQFj3Yhgkko3xh0nRF-6A47T-aCKg/viewform", "_blank");
     }
 
-    // Conectar con Spotify - SOLUCIÓN PARA PC
+    // Conectar con Spotify - SOLUCIÓN DEFINITIVA PARA PC
     function connectWithSpotify() {
         // Construir URL de autorización
         const authUrl = `https://accounts.spotify.com/authorize?client_id=${SPOTIFY_CONFIG.CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(SPOTIFY_CONFIG.REDIRECT_URI)}&scope=${encodeURIComponent(SPOTIFY_CONFIG.SCOPES)}&show_dialog=true`;
@@ -488,26 +639,17 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
             return;
         }
         
-        // Para PC: usar comunicación entre ventanas
+        // Para PC: usar comunicación entre ventanas con página intermedia
         const width = 500, height = 600;
         const left = (window.innerWidth - width) / 2;
         const top = (window.innerHeight - height) / 2;
         
-        // Abrir ventana emergente
+        // Abrir ventana emergente con página de redirección
         authWindow = window.open(
-            authUrl, 
+            `${window.location.origin}/spotify-redirect.html?redirect=${encodeURIComponent(SPOTIFY_CONFIG.REDIRECT_URI)}`, 
             'SpotifyAuth', 
             `width=${width},height=${height},top=${top},left=${left}`
         );
-        
-        // Comprobar periódicamente si la ventana se cerró
-        const checkAuthWindow = setInterval(() => {
-            if (authWindow.closed) {
-                clearInterval(checkAuthWindow);
-                // Verificar si tenemos token en localStorage
-                checkLocalStorageForToken();
-            }
-        }, 500);
     }
 
     // Verificar si es dispositivo móvil
@@ -531,11 +673,6 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
             // Mostrar mensaje de éxito
             showAuthStatus("¡Autenticación exitosa! Ya puedes sugerir canciones.", true);
         } 
-        // Verificar si hay token almacenado (para PC)
-        else if (localStorage.getItem('spotifyToken')) {
-            spotifyAccessToken = localStorage.getItem('spotifyToken');
-            validateToken();
-        }
     }
 
     // Manejar nuevo token
@@ -543,35 +680,8 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
         spotifyAccessToken = token;
         isAuthenticated = true;
         
-        // Guardar en localStorage para PC
-        if (!isMobileDevice()) {
-            localStorage.setItem('spotifyToken', token);
-        }
-        
         // Configurar características para usuario autenticado
         setupAuthenticatedFeatures();
-    }
-
-    // Validar token
-    async function validateToken() {
-        try {
-            const response = await fetch("https://api.spotify.com/v1/me", {
-                headers: { 'Authorization': `Bearer ${spotifyAccessToken}` }
-            });
-            
-            if (response.ok) {
-                isAuthenticated = true;
-                setupAuthenticatedFeatures();
-                showAuthStatus("Sesión recuperada. Ya puedes sugerir canciones.", true);
-            } else {
-                localStorage.removeItem('spotifyToken');
-                showAuthStatus("La sesión expiró. Por favor, conéctate de nuevo.", false);
-            }
-        } catch (error) {
-            console.error("Error validando token:", error);
-            localStorage.removeItem('spotifyToken');
-            showAuthStatus("Error al validar la sesión. Intenta de nuevo.", false);
-        }
     }
 
     // Configurar características para usuarios autenticados
@@ -714,7 +824,6 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
     function resetAuth() {
         spotifyAccessToken = null;
         isAuthenticated = false;
-        localStorage.removeItem('spotifyToken');
         document.getElementById('spotifyAuthSection').classList.add('hidden');
         document.getElementById('guestOptions').classList.remove('hidden');
         document.getElementById('connectSpotifyBtn').textContent = "Conectar con Spotify";
@@ -730,23 +839,6 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
         if (event.data.type === 'SPOTIFY_AUTH_SUCCESS') {
             handleNewToken(event.data.token);
             showPopupMessage("¡Autenticación exitosa! Ya puedes sugerir canciones.");
-        }
-    }
-
-    // Manejar cambios en localStorage
-    function handleStorageChange(event) {
-        if (event.key === 'spotifyToken' && event.newValue) {
-            spotifyAccessToken = event.newValue;
-            validateToken();
-        }
-    }
-
-    // Verificar localStorage en busca del token
-    function checkLocalStorageForToken() {
-        const token = localStorage.getItem('spotifyToken');
-        if (token) {
-            handleNewToken(token);
-            showAuthStatus("Sesión recuperada. Ya puedes sugerir canciones.", true);
         }
     }
 
