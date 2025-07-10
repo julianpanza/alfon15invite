@@ -1,545 +1,169 @@
-<!-- Configuracion -->
 <!doctype html>
 <html lang="es">
-<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
 <head>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="invitaciones digitales para eventos">
+    <meta name="keywords" content="invitaciones, digitales, tarjetas, boda, invitación, interactivas, casamiento, save the date, agenda la fecha, ideas invitación, tarjetas de 15, tarjetas eventos, wedding, matrimonio, ideas tarjetas, rsvp, modelos de invitacion, página de boda, página web de casamiento">
 
-    
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="description" content="invitaciones digitales para eventos">
-<meta name="keywords" content="invitaciones, digitales, tarjetas, boda, invitación, interactivas, casamiento, save the date, agenda la fecha, ideas invitación, tarjetas de 15, tarjetas eventos, wedding, matrimonio, ideas tarjetas, rsvp, modelos de invitacion, página de boda, página web de casamiento">
+    <link rel='stylesheet' href='assets/css/bootstrap.minc91c.css?v=1720025687'/>
+    <link rel='stylesheet' href='assets/css/jquery.fancybox.mind3d8.css?v=1720025689'/>
+    <link rel='stylesheet' href='assets/css/stylesd9fd.css?v=1722011145'/>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;900&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
 
-
-
-<link rel='stylesheet' href='assets/css/bootstrap.minc91c.css?v=1720025687'/><link rel='stylesheet' href='assets/css/jquery.fancybox.mind3d8.css?v=1720025689'/><link rel='stylesheet' href='assets/css/stylesd9fd.css?v=1722011145'/>
-
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;900&amp;display=swap" rel="stylesheet">
-
-
-
-<link href="../../../cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
-
-
-<title>
-  Invitación de 15 | Alfonsina Panza Fontana</title>
-
+    <title>Invitación de 15 | Alfonsina Panza Fontana</title>
 </head>
 
 <body>
 
- <section class="audio">
-    <div class="container">
-        <div class="row">
-            <div class="botonAudio-container">
-                <audio id="audioPrueba" loop>
-                    <source src="assets/musica.mp3" type="audio/mp3">
-                    ¡Ups! Tu navegador no soporta este archivo de audio.
-                </audio>
-                <div class='animation'>
-                    <img id="btnPlay" src="assets/img/icono-musica_play.svg" alt="boton play" onclick="playAudio()"
-                        class="botonAudio vertical_shake">
-
-                    <img id="btnPausa" src="assets/img/icono-musica_pausa.svg" class="botonAudio hidden"
-                        onclick="pauseAudio()" alt="boton pausa">
+    <!-- Audio -->
+    <section class="audio">
+        <div class="container">
+            <div class="row">
+                <div class="botonAudio-container">
+                    <audio id="audioPrueba" loop>
+                        <source src="assets/musica.mp3" type="audio/mp3">
+                        ¡Ups! Tu navegador no soporta este archivo de audio.
+                    </audio>
+                    <div class='animation'>
+                        <img id="btnPlay" src="assets/img/icono-musica_play.svg" alt="boton play" onclick="playAudio()" class="botonAudio vertical_shake">
+                        <img id="btnPausa" src="assets/img/icono-musica_pausa.svg" class="botonAudio hidden" onclick="pauseAudio()" alt="boton pausa">
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
     
-<section class="portada parallax-portada d-flex justify-content-center align-items-center">
+    <!-- Portada -->
+    <section class="portada parallax-portada d-flex justify-content-center align-items-center">
+        <div class="logo-portada fade-in-portada">
+            <img class="" src="assets/img/logo-portada.png" alt="">
+            <div class="scroll-down"></div>
+        </div>
+    </section>
 
-  
-  <div class="logo-portada fade-in-portada">
-    <img class="" src="assets/img/logo-portada.png" alt="">
-    <div class="scroll-down"></div>
-  </div>
- </section>
-
- 
+    <!-- Cuenta Regresiva -->
     <section class="cuenta-regresiva" id="cuenta-regresiva">
-  <div class="container">
-    <!-- Contenedor de cuenta regresiva -->
-    <p class="m-3">¡Te espero para festejar este gran momento de mi vida!</p>
-    <p id="reloj" class="descartar">¡Te espero para festejar!</p>
-    <div class="row justify-content-center margenSup" id="reloj_number">
-      <div class="col-md-1 col-2 d-flex flex-column justify-content-center p-0">
-        <p class="num_cuenta" id="dias"></p>
-        <p class="text_cuenta">días</p>
-      </div>
-      <p class="num_cuenta">:</p>
-      <div class="col-md-1 col-2 d-flex flex-column justify-content-center p-0">
-        <p class="num_cuenta" id="horas"></p>
-        <p class="text_cuenta">hs</p>
-      </div>
-      <p class="num_cuenta">:</p>
-      <div class="col-md-1 col-2 d-flex flex-column justify-content-center p-0">
-        <p class="num_cuenta" id="min"></p>
-        <p class="text_cuenta">min</p>
-      </div>
-      <p class="num_cuenta">:</p>
-      <div class="col-md-1 col-2 d-flex flex-column justify-content-center p-0">
-        <p class="num_cuenta" id="seg"></p>
-        <p class="text_cuenta">seg</p>
-      </div>
-    </div>
-  </div>
-</section>
-
+        <div class="container">
+            <p class="m-3">¡Te espero para festejar este gran momento de mi vida!</p>
+            <p id="reloj" class="descartar">¡Te espero para festejar!</p>
+            <div class="row justify-content-center margenSup" id="reloj_number">
+                <div class="col-md-1 col-2 d-flex flex-column justify-content-center p-0">
+                    <p class="num_cuenta" id="dias"></p>
+                    <p class="text_cuenta">días</p>
+                </div>
+                <p class="num_cuenta">:</p>
+                <div class="col-md-1 col-2 d-flex flex-column justify-content-center p-0">
+                    <p class="num_cuenta" id="horas"></p>
+                    <p class="text_cuenta">hs</p>
+                </div>
+                <p class="num_cuenta">:</p>
+                <div class="col-md-1 col-2 d-flex flex-column justify-content-center p-0">
+                    <p class="num_cuenta" id="min"></p>
+                    <p class="text_cuenta">min</p>
+                </div>
+                <p class="num_cuenta">:</p>
+                <div class="col-md-1 col-2 d-flex flex-column justify-content-center p-0">
+                    <p class="num_cuenta" id="seg"></p>
+                    <p class="text_cuenta">seg</p>
+                </div>
+            </div>
+        </div>
+    </section>
     
+    <!-- Ceremonia y Fiesta -->
     <section class="ceremonia-fiesta mb-5">
-  <div class="container">
-    <div class="row">
-
-            
-        <div class="col-md-12 columna">
-          <img src="assets/img/icono-fiesta.svg" alt="" class="circle bounce-in">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 columna">
+                    <img src="assets/img/icono-fiesta.svg" alt="" class="circle bounce-in">
+                </div>
+                
+                <div class="col-md-12 columna no-margin-top divFiesta animated">
+                    <h4>FIESTA</h4>
+                    <p>
+                        Sábado 1 de noviembre </br>
+                        21:00 a 05:00 hs.</br>
+                        Salón Centro Empleado de comercio</br>
+                        Bv. Damico S/N, Pergamino</br>
+                        Clickeá en el botón de abajo y encontrá las indicaciones para llegar,</br>
+                        ¡nos vemos!😉
+                    </p>
+                    <a target="_blank" href="https://maps.app.goo.gl/iJPKgjX8XSGz7gkS8" class="btn">CÓMO LLEGAR</a>
+                </div>
+            </div>
         </div>
-        
-        <div class="col-md-12 columna no-margin-top divFiesta animated">
-          <h4>FIESTA</h4>
-          <p>
-            Sábado 1 de noviembre </br>
-21:00 a 05:00 hs.</br>
-Salón Centro Empleado de comercio</br>
-Bv. Damico S/N, Pergamino</br>
-Clickeá en el botón de abajo y encontrá las indicaciones para llegar,</br>
-¡nos vemos!😉
-          </p>
-          <a target="_blank" href="https://maps.app.goo.gl/iJPKgjX8XSGz7gkS8" class="btn">CÓMO LLEGAR</a>
-        </div>
-      
+    </section>
 
-         <!-- MISA Y FIESTA -->
-
-              
-
-    </div>
-  </div>
-</section>
-
-    <!-- Galeria -->
+    <!-- Galería -->
     <section class="galeria">
-  <div class="container">
-
-    <div class="row">
-
-      
-
-      
-
-      
-
-      
-
-      
-
-      
-
-      
-
-      
-
-      
-        <!-- Impmrimo el bloque con la imagen -->
-          <div class="col-6 col-md-3 item-galeria animated opacidad">
-            <a href="assets/img/galeria/1.jpg" data-fancybox="images" data-caption="">
-              <img class="img-fluid" src="assets/img/galeria/1.jpg" alt="">
-            </a>
-          </div>
-      
-      
-        <!-- Impmrimo el bloque con la imagen -->
-          <div class="col-6 col-md-3 item-galeria animated opacidad">
-            <a href="assets/img/galeria/2.jpg" data-fancybox="images" data-caption="">
-              <img class="img-fluid" src="assets/img/galeria/2.jpg" alt="">
-            </a>
-          </div>
-      
-      
-        <!-- Impmrimo el bloque con la imagen -->
-          <div class="col-6 col-md-3 item-galeria animated opacidad">
-            <a href="assets/img/galeria/3.jpg" data-fancybox="images" data-caption="">
-              <img class="img-fluid" src="assets/img/galeria/3.jpg" alt="">
-            </a>
-          </div>
-      
-      
-        <!-- Impmrimo el bloque con la imagen -->
-          <div class="col-6 col-md-3 item-galeria animated opacidad">
-            <a href="assets/img/galeria/4.jpg" data-fancybox="images" data-caption="">
-              <img class="img-fluid" src="assets/img/galeria/4.jpg" alt="">
-            </a>
-          </div>
-      
-      
-        <!-- Impmrimo el bloque con la imagen -->
-          <div class="col-6 col-md-3 item-galeria animated opacidad">
-            <a href="assets/img/galeria/5.jpg" data-fancybox="images" data-caption="">
-              <img class="img-fluid" src="assets/img/galeria/5.jpg" alt="">
-            </a>
-          </div>
-      
-      
-        <!-- Impmrimo el bloque con la imagen -->
-          <div class="col-6 col-md-3 item-galeria animated opacidad">
-            <a href="assets/img/galeria/6.jpg" data-fancybox="images" data-caption="">
-              <img class="img-fluid" src="assets/img/galeria/6.jpg" alt="">
-            </a>
-          </div>
-      
-      
-        <!-- Impmrimo el bloque con la imagen -->
-          <div class="col-6 col-md-3 item-galeria animated opacidad">
-            <a href="assets/img/galeria/7.jpg" data-fancybox="images" data-caption="">
-              <img class="img-fluid" src="assets/img/galeria/7.jpg" alt="">
-            </a>
-          </div>
-      
-      
-        <!-- Impmrimo el bloque con la imagen -->
-          <div class="col-6 col-md-3 item-galeria animated opacidad">
-            <a href="assets/img/galeria/8.jpg" data-fancybox="images" data-caption="">
-              <img class="img-fluid" src="assets/img/galeria/8.jpg" alt="">
-            </a>
-          </div>
-   
-    </div>
-  </div>
-</section>
-
-
+        <div class="container">
+            <div class="row">
+                <div class="col-6 col-md-3 item-galeria animated opacidad">
+                    <a href="assets/img/galeria/1.jpg" data-fancybox="images" data-caption="">
+                        <img class="img-fluid" src="assets/img/galeria/1.jpg" alt="">
+                    </a>
+                </div>
+                <div class="col-6 col-md-3 item-galeria animated opacidad">
+                    <a href="assets/img/galeria/2.jpg" data-fancybox="images" data-caption="">
+                        <img class="img-fluid" src="assets/img/galeria/2.jpg" alt="">
+                    </a>
+                </div>
+                <div class="col-6 col-md-3 item-galeria animated opacidad">
+                    <a href="assets/img/galeria/3.jpg" data-fancybox="images" data-caption="">
+                        <img class="img-fluid" src="assets/img/galeria/3.jpg" alt="">
+                    </a>
+                </div>
+                <div class="col-6 col-md-3 item-galeria animated opacidad">
+                    <a href="assets/img/galeria/4.jpg" data-fancybox="images" data-caption="">
+                        <img class="img-fluid" src="assets/img/galeria/4.jpg" alt="">
+                    </a>
+                </div>
+                <div class="col-6 col-md-3 item-galeria animated opacidad">
+                    <a href="assets/img/galeria/5.jpg" data-fancybox="images" data-caption="">
+                        <img class="img-fluid" src="assets/img/galeria/5.jpg" alt="">
+                    </a>
+                </div>
+                <div class="col-6 col-md-3 item-galeria animated opacidad">
+                    <a href="assets/img/galeria/6.jpg" data-fancybox="images" data-caption="">
+                        <img class="img-fluid" src="assets/img/galeria/6.jpg" alt="">
+                    </a>
+                </div>
+                <div class="col-6 col-md-3 item-galeria animated opacidad">
+                    <a href="assets/img/galeria/7.jpg" data-fancybox="images" data-caption="">
+                        <img class="img-fluid" src="assets/img/galeria/7.jpg" alt="">
+                    </a>
+                </div>
+                <div class="col-6 col-md-3 item-galeria animated opacidad">
+                    <a href="assets/img/galeria/8.jpg" data-fancybox="images" data-caption="">
+                        <img class="img-fluid" src="assets/img/galeria/8.jpg" alt="">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- Confirmar Asistencia -->
     <section class="confirmar-asistencia">
-
-  <div class="container">
-
-    <h4>CONFIRMACIÓN DE ASISTENCIA</h4>
-
-    <p>Cuento con tu presencia. </br>¡Confirmá tu asistencia!</p>
-
-    <a target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSe3c7cS_A66K90gCLWpNwvR9sh8UUcwrn4ueuM7HO-2EGJ20Q/viewform?usp=header" class="btn">Confirmar asistencia</a>
-
-   
-  </div>  
-
-</section>
+        <div class="container">
+            <h4>CONFIRMACIÓN DE ASISTENCIA</h4>
+            <p>Cuento con tu presencia. </br>¡Confirmá tu asistencia!</p>
+            <a target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSe3c7cS_A66K90gCLWpNwvR9sh8UUcwrn4ueuM7HO-2EGJ20Q/viewform?usp=header" class="btn">Confirmar asistencia</a>
+        </div>  
+    </section>
 
     <!-- Dress Code -->
-     
+    <section class="dresscode">
+        <div class="container animated divDressCode">
+            <img src="assets/img/icono-dresscode.svg" alt="" class="bounce-in">
+            <h4>DRESS CODE</h4>
+            <p>Elegante</p>
+        </div>
+    </section>
 
-<section class="dresscode">
-
-  <div class="container animated divDressCode">
-
-    <img src="assets/img/icono-dresscode.svg" alt="" class="bounce-in">
-
-    <h4>DRESS CODE</h4>
-    <p>Elegante</p>
-
-  
-
-    </div>
-
-  </div>
-
-</section>
-
-
- 
-
-
-
-        <!-- Instagram -->
-    <section class="parallax-instagram instagram d-flex justify-content-center align-items-center">
-
-
-  <div class="contenido">
-
-   <img src="assets/img/icono-instagram.svg" alt="" class="bounce-in">
-
-    <br>
-    <div class="animated divIntagram">
-         <span class="hashtag">
-        @alfonp.font      </span>
-
-    <p>¡Preparate para esta gran fiesta!<br>
-
-Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
-
-
-
-    <a target="_blank" href="https://www.instagram.com/alfonp.font/" class="btn">Ver instagram</a>
-  
-
- </div>
-
-  </div>
-
-
-</section>
-<style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Montserrat', sans-serif;
-        }
-        
-        body {
-            background: linear-gradient(135deg, #f9d1d1, #e3b0e6, #a1c4fd);
-            color: #5a2a5a;
-            line-height: 1.6;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        section {
-            padding: 60px 0;
-            text-align: center;
-        }
-        
-        h4 {
-            font-size: 28px;
-            margin-bottom: 20px;
-            color: #7e387e;
-            font-weight: 600;
-        }
-        
-        p {
-            font-size: 18px;
-            margin-bottom: 20px;
-            color: #444;
-        }
-        
-        .btn {
-            display: inline-block;
-            background: #7e387e;
-            color: white;
-            padding: 12px 30px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 600;
-            margin: 15px 5px;
-            transition: all 0.3s ease;
-            border: 2px solid #7e387e;
-        }
-        
-        .btn:hover {
-            background: transparent;
-            color: #7e387e;
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(126, 56, 126, 0.3);
-        }
-        
-        .btn-alt {
-            background: transparent;
-            color: #7e387e;
-        }
-        
-        .btn-alt:hover {
-            background: #7e387e;
-            color: white;
-        }
-        
-        /* Estilos para la sección de música */
-        .canciones {
-            background: rgba(255, 255, 255, 0.8);
-            border-radius: 20px;
-            margin: 30px auto;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            max-width: 900px;
-            padding: 30px;
-        }
-        
-        .canciones img {
-            width: 80px;
-            margin-bottom: 20px;
-        }
-        
-        .music-player {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            padding: 25px;
-            margin-top: 25px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        }
-        
-        .spotify-embed-guest iframe {
-            border-radius: 12px;
-            margin-bottom: 25px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-        
-        .collab-panel {
-            background: rgba(249, 209, 209, 0.3);
-            border-radius: 15px;
-            padding: 20px;
-            margin-top: 20px;
-        }
-        
-        .search-box {
-            display: flex;
-            margin: 20px 0;
-        }
-        
-        #songSearch {
-            flex: 1;
-            padding: 12px 20px;
-            border: 2px solid #e3b0e6;
-            border-radius: 50px 0 0 50px;
-            font-size: 16px;
-            outline: none;
-        }
-        
-        .search-btn {
-            padding: 12px 25px;
-            background: #7e387e;
-            color: white;
-            border: none;
-            border-radius: 0 50px 50px 0;
-            cursor: pointer;
-            font-weight: 600;
-        }
-        
-        #searchResults {
-            margin-top: 20px;
-        }
-        
-        .track-item {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: all 0.3s ease;
-            border-left: 4px solid #a1c4fd;
-        }
-        
-        .track-item:hover {
-            transform: translateX(5px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-        
-        .track-info {
-            flex: 1;
-        }
-        
-        .track-info strong {
-            color: #7e387e;
-            font-size: 17px;
-        }
-        
-        .track-info small {
-            color: #888;
-            font-size: 14px;
-        }
-        
-        .add-btn {
-            background: #1DB954;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        
-        .add-btn:hover {
-            background: #179a46;
-            transform: scale(1.05);
-        }
-        
-        .add-btn:disabled {
-            background: #cccccc;
-            cursor: not-allowed;
-        }
-        
-        .auth-status {
-            margin: 15px 0;
-            padding: 10px;
-            border-radius: 8px;
-            font-weight: 600;
-        }
-        
-        .status-connected {
-            background: rgba(29, 185, 84, 0.2);
-            color: #179a46;
-        }
-        
-        .status-error {
-            background: rgba(255, 99, 132, 0.2);
-            color: #ff6384;
-        }
-        
-        .hidden {
-            display: none;
-        }
-        
-        .success-message {
-            background: rgba(29, 185, 84, 0.2);
-            color: #179a46;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 15px 0;
-            display: none;
-        }
-        
-        /* Animaciones */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .animated {
-            animation: fadeIn 0.8s ease-out;
-        }
-        
-        .bounce-in {
-            animation: bounceIn 0.8s ease-out;
-        }
-        
-        @keyframes bounceIn {
-            0% { transform: scale(0.8); opacity: 0; }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            section {
-                padding: 40px 0;
-            }
-            
-            h4 {
-                font-size: 24px;
-            }
-            
-            .music-player {
-                padding: 15px;
-            }
-            
-            .track-item {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .add-btn {
-                margin-top: 10px;
-                align-self: flex-end;
-            }
-        }
-    </style>
-  <!-- Sección de Música - Corregida -->
+    <!-- Sección de Música -->
     <section class="canciones">
         <div class="container">
             <img src="https://cdn-icons-png.flaticon.com/512/727/727237.png" alt="Icono de música" class="bounce-in">
@@ -547,7 +171,6 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
                 <h4>¡PLAYLIST!</h4>
                 <p>Disfruta de nuestra playlist y sugiere canciones para la fiesta</p>
 
-                <!-- Reproductor para invitados -->
                 <div class="music-player">
                     <div class="spotify-embed-guest">
                         <iframe 
@@ -571,7 +194,6 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
                             <button id="connectSpotifyBtn" class="btn">Conectar con Spotify</button>
                         </div>
 
-                        <!-- Sección para usuarios autenticados -->
                         <div id="spotifyAuthSection" class="hidden">
                             <div class="search-box">
                                 <input type="text" id="songSearch" placeholder="Busca una canción o artista...">
@@ -589,6 +211,117 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
         </div>
     </section>
 
+    <!-- Instagram -->
+    <section class="parallax-instagram instagram d-flex justify-content-center align-items-center">
+        <div class="contenido">
+            <img src="assets/img/icono-instagram.svg" alt="" class="bounce-in">
+            <br>
+            <div class="animated divIntagram">
+                <span class="hashtag">@alfonp.font</span>
+                <p>¡Preparate para esta gran fiesta!<br>
+                Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
+                <a target="_blank" href="https://www.instagram.com/alfonp.font/" class="btn">Ver instagram</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- CBU -->
+    <section class="cbu">
+        <div class="container">
+            <img src="assets/img/icono-regalo.svg" alt="" class="bounce-in">
+            <div class="animated divCbu">
+                <p>El mejor regalo es que vengas,</br>
+                pero si deseás regalarme algo, podés colaborar con mis sueños y anhelos✨</br>
+                ¡Muchas gracias!</p>
+                <a data-fancybox data-src="#hidden-cbu" href="javascript:;" data-options='{"touch" : false}' class="btn btn-alt">Hacer un regalo</a>
+
+                <!-- Datos CBU (hidden by default) -->
+                <div style="display: none;" id="hidden-cbu">
+                    <span class="title">Datos Bancarios</span>
+                    <ul>
+                        <li>Nombre del Titular: Alfonsina Panza Fontana</li>
+                        <li>CBU: 0140300603658455259699</li>
+                        <li>Alias: alfonsina.panza.fontana</li>
+                        <li>DNI: 50.646.413</li>
+                        <li>Cuenta DNI</li>
+                    </ul>
+
+                    <span class="title">Buzón de regalos</span>
+                    <ul>
+                        <li>Si deseás hacer tu regalo personalmente, </br>
+                        El día del evento habrá un buzón para dejar obsequios.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Carga de Fotos y Videos -->
+    <section class="carga-fotos-videos">
+        <div class="container text-center">
+            <h3>¡Comparte tus fotos y videos!</h3>
+            <p>Sube las fotos y videos que captures durante la fiesta para que podamos compartir recuerdos inolvidables.</p>
+
+            <a href="https://weduploader.com/upload/8qd8DP2R6BloZQUQ" target="_blank" class="btn btn-primary mb-3">Subir Fotos/Videos</a> 
+
+            <div class="qr-container mt-4">
+                <p>O escanea el código QR para subir tus recuerdos:</p>
+                <a href="https://weduploader.com/upload/8qd8DP2R6BloZQUQ" target="_blank">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://weduploader.com/upload/8qd8DP2R6BloZQUQ" alt="Código QR para subir archivos" class="img-fluid" />
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Agradecimiento -->
+    <section class="gracias">
+        <div class="container animated divGracias">
+            <p>¡Gracias por acompañarme en este momento tan importante!</p>
+        </div>
+    </section>
+
+    <!-- Contacto -->
+    <section class="contacto">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>¿Tenés alguna pregunta?</h4>
+                    <p>¡Contáctame! Te responderé lo antes posible.</p>
+                    <ul>
+                        <li><i class="fab fa-whatsapp"></i> <a target="_blank" href="https://api.whatsapp.com/send?phone=542477684660&amp;text=%C2%A1Me%20gustar%C3%ADa%20recibir%20m%C3%A1s%20informaci%C3%B3n%20del%20evento!%20Gracias.">¡Envianos un Whatsapp!</a></li>
+                        <li><i class="fas fa-phone-alt"></i> +549 2477 68-4660</li>
+                        <li><i class="fas fa-envelope"></i> <a href="mailto:alfonsinapf@icloud.com">alfonsinapf@icloud.com</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <section class="footer">
+        <div class="containter">
+            <p>Invitación digital © 2025. Todos los derechos reservados <br>
+        </div>
+    </section>
+
+    <!-- Scripts -->
+    <script>
+        // Variables para JS desde config
+        var fechaCuentaRegresiva = "11/01/2025 21:00:00";
+        var fechaInicioEvento = "11/01/2024 21:00:00";
+        var fechaFinEvento = "11/02/2024 05:00:00";
+        var tituloEvento = "Fiesta de 15";
+    </script>
+
+    <!-- Scripts Generales -->
+    <script type='text/javascript' src='assets/js/jquery-3.5.1.slim.minc30d.js?v=1720025714'></script>
+    <script type='text/javascript' src='assets/js/popper.min2636.js?v=1720025718'></script>
+    <script type='text/javascript' src='assets/js/bootstrap.mine0ae.js?v=1720025711'></script>
+    <script type='text/javascript' src='assets/js/parallax.min6fdb.js?v=1720025716'></script>
+    <script type='text/javascript' src='assets/js/jquery.fancybox.min11b3.js?v=1720025715'></script>
+    <script type='text/javascript' src='assets/js/scriptsaa67.js?v=1720025719'></script>
+
+    <!-- Script para la sección de música -->
     <script>
         // Configuración de Spotify
         const SPOTIFY_CONFIG = {
@@ -814,151 +547,10 @@ Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
                 authStatus.classList.add('hidden');
             }, 5000);
         }
-</script>
-</section>
-    <!-- CBU -->
-    
-  <section class="cbu">
-
-    <div class="container">
-
-      <img src="assets/img/icono-regalo.svg" alt="" class="bounce-in">
-      <div  class="animated divCbu">
-        <p>El mejor regalo es que vengas,</br>
-pero si deseás regalarme algo, podés colaborar con mis sueños y anhelos✨</br>
-¡Muchas gracias!</p>
-        <a data-fancybox data-src="#hidden-cbu" href="javascript:;" data-options='{"touch" : false}'
-          class="btn btn-alt">Hacer un regalo</a>
-
-        <!-- Datos Cbu -->
-        <div style="display: none;" id="hidden-cbu">
-
-          
-
-<span class="title">Datos Bancarios</span>
-
-<ul>
-  <li>Nombre del Titular: Alfonsina Panza Fontana</li>
-  <li>CBU: 0140300603658455259699</li>
-  <li>Alias: alfonsina.panza.fontana</li>
-  <li>DNI: 50.646.413</li>
-  <li>Cuenta DNI</li>
-</ul>
-
-<span class="title">Buzón de regalos</span>
-<ul>
-  <li>Si deseás hacer tu regalo personalmente, </br>
-  El día del evento habrá un buzón para dejar obsequios.</li>
-</ul>
-
-
-        </div>
-      </div>
-
-
-    </div>
-
-  </section>
-
-<!-- Sección de carga de fotos y videos -->
-
-
-<section class="carga-fotos-videos">
-  <div class="container text-center">
-    <p> </p><h3>¡Comparte tus fotos y videos!</h3>
-    <p>Sube las fotos y videos que captures durante la fiesta para que podamos compartir recuerdos inolvidables.</p>
-
-    <!-- Botón para Weduploader -->
-    <a href="https://weduploader.com/upload/8qd8DP2R6BloZQUQ" target="_blank" class="btn btn-primary mb-3">Subir Fotos/Videos</a> 
-
-        <!-- Código QR -->
-    <div class="qr-container mt-4">
-      <p>O escanea el código QR para subir tus recuerdos:</p>
-      <a href="https://weduploader.com/upload/8qd8DP2R6BloZQUQ" target="_blank">
-        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://weduploader.com/upload/8qd8DP2R6BloZQUQ" alt="Código QR para subir archivos" class="img-fluid" />
-      </a>
-      <p>
-      
-      </p>
-    </div>
-  </div>
-</section>
-
-    <!-- Gracias -->
-    <section class="gracias">
-
-  <div class="container animated divGracias">
-
-    <p>¡Gracias por acompañarme en este momento tan importante!</p>
-
-  </div>
-
-</section>
-        <!-- Contacto -->
-    <!-- Contactos -->
-<section class="contacto">
-  <div class="container">
-    <div class="row">
-
-      <!-- Col 1 -->
-      <div class="col-md-6">
-
-        <h4>¿Tenés alguna pregunta?</h4>
-        <p>¡Contáctame! Te responderé lo antes posible.</p>
-        <ul>
-
-           <li><i class="fab fa-whatsapp"></i> <a target="_blank" href="https://api.whatsapp.com/send?phone=542477684660&amp;text=%C2%A1Me%20gustar%C3%ADa%20recibir%20m%C3%A1s%20informaci%C3%B3n%20del%20evento!%20Gracias.">¡Envianos un Whatsapp!</a></li>
-
-           
-
-           <li><i class="fas fa-phone-alt"></i> +549 2477 68-4660</li>
-          <li><i class="fas fa-envelope"></i> <a href="mailto:alfonsinapf@icloud.com">alfonsinapf@icloud.com</a> </li>
-        </ul>
-
-
-      </div>
- 
-        </div>
-  </div>
-
-
-
-</section>
-
-
-    <!-- Footer -->
-    
-
-<section class="footer">
-
-  <div class="containter">
-    <p>Invitación digital © 2025. Todos los derechos reservados <br>
-   </div>
-
-</section>
-
-
-
-    <!-- Varaibles para JS desde config -->
-    <script>
-    // Cuenta regresiva
-    var fechaCuentaRegresiva = "11/01/2025 21:00:00";
-
-    // Datos para Agenda
-    var fechaInicioEvento = "11/01/2024 21:00:00";
-    var fechaFinEvento = "11/02/2024 05:00:00";
-    var tituloEvento = "Fiesta de 15";
     </script>
 
-
-    <!-- Scripts Generales-->
-    <!-- Listado de js con version dinamica segun modificacion de archivo -->
-<script type='text/javascript' src='assets/js/jquery-3.5.1.slim.minc30d.js?v=1720025714'></script><script type='text/javascript' src='assets/js/popper.min2636.js?v=1720025718'></script><script type='text/javascript' src='assets/js/bootstrap.mine0ae.js?v=1720025711'></script><script type='text/javascript' src='assets/js/parallax.min6fdb.js?v=1720025716'></script><script type='text/javascript' src='assets/js/jquery.fancybox.min11b3.js?v=1720025715'></script><script type='text/javascript' src='assets/js/scriptsaa67.js?v=1720025719'></script>
-
-
-
+    <!-- Scripts de seguimiento -->
+    <script>'undefined'=== typeof _trfq || (window._trfq = []);'undefined'=== typeof _trfd && (window._trfd=[]),_trfd.push({'tccl.baseHost':'secureserver.net'},{'ap':'cpbh-mt'},{'server':'p3plmcpnl486752'},{'dcenter':'p3'},{'cp_id':'3446280'},{'cp_cl':'8'})</script>
+    <script src='https://img1.wsimg.com/signals/js/clients/scc-c2/scc-c2.min.js'></script>
 </body>
-
-<script>'undefined'=== typeof _trfq || (window._trfq = []);'undefined'=== typeof _trfd && (window._trfd=[]),_trfd.push({'tccl.baseHost':'secureserver.net'},{'ap':'cpbh-mt'},{'server':'p3plmcpnl486752'},{'dcenter':'p3'},{'cp_id':'3446280'},{'cp_cl':'8'}) // Monitoring performance to make your website faster. If you want to opt-out, please contact web hosting support.</script><script src='../../../img1.wsimg.com/signals/js/clients/scc-c2/scc-c2.min.js'></script>
-<!-- Mirrored from www.agendalafecha.com/invitaciones/demo15/ by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 24 Jan 2025 13:22:10 GMT -->
 </html>
