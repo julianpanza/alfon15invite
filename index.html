@@ -49,6 +49,11 @@
             color: #dc3545;
         }
         
+        .status-warning {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+        }
+        
         .hidden {
             display: none !important;
         }
@@ -82,6 +87,18 @@
             background: #1ed760;
         }
         
+        .search-btn:disabled {
+            background: #b3b3b3;
+            cursor: not-allowed;
+        }
+        
+        .track-list {
+            max-height: 400px;
+            overflow-y: auto;
+            margin: 15px 0;
+            padding-right: 5px;
+        }
+        
         .track-item {
             display: flex;
             justify-content: space-between;
@@ -90,7 +107,7 @@
             margin: 12px 0;
             background: rgba(30, 30, 30, 0.5);
             border-radius: 8px;
-            transition: background 0.3s;
+            transition: all 0.3s ease;
         }
         
         .track-item:hover {
@@ -101,6 +118,7 @@
             display: flex;
             align-items: center;
             flex: 1;
+            min-width: 0;
         }
         
         .track-image {
@@ -109,10 +127,26 @@
             border-radius: 5px;
             margin-right: 15px;
             object-fit: cover;
+            flex-shrink: 0;
+        }
+        
+        .track-image-placeholder {
+            width: 50px;
+            height: 50px;
+            border-radius: 5px;
+            margin-right: 15px;
+            background: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #aaa;
+            font-size: 20px;
+            flex-shrink: 0;
         }
         
         .track-details {
             flex-grow: 1;
+            min-width: 0;
         }
         
         .track-name {
@@ -120,11 +154,17 @@
             font-weight: 600;
             margin-bottom: 3px;
             color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
         .track-artist {
             font-size: 13px;
             color: #aaa;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
         .add-btn {
@@ -140,6 +180,7 @@
             align-items: center;
             gap: 6px;
             transition: all 0.3s;
+            flex-shrink: 0;
         }
         
         .add-btn:hover:not(:disabled) {
@@ -198,10 +239,29 @@
             border: 1px solid white;
             margin-right: 10px;
         }
+        
+        /* Scrollbar personalizada */
+        .track-list::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .track-list::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .track-list::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+        }
+        
+        .track-list::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
     </style>
 </head>
-
 <body>
+
 
     <!-- Audio -->
     <section class="audio">
@@ -507,7 +567,7 @@
     <script type='text/javascript' src='assets/js/scriptsaa67.js?v=1720025719'></script>
 
     <!-- Script para la sección de música -->
-   <script>
+  <script>
         // Configuración de Spotify
         const SPOTIFY_CONFIG = {
             CLIENT_ID: "d950ae09b4e14eb0b82b70151b1dcb82",
@@ -520,6 +580,8 @@
         let spotifyAccessToken = null;
         let isAuthenticated = false;
         let spotifyAuthWindow = null;
+        let currentPlaylistTracks = null;
+        let lastPlaylistUpdate = null;
 
         // Elementos del DOM
         const guestOptions = document.getElementById('guestOptions');
@@ -598,6 +660,8 @@
             isAuthenticated = true;
             setupAuthenticatedFeatures();
             showAuthStatus("¡Conectado exitosamente con Spotify!", "success");
+            // Cargar las canciones de la playlist al autenticarse
+            loadPlaylistTracks();
         }
 
         // Verificar autenticación con Spotify
@@ -643,6 +707,40 @@
             authStatus.classList.remove('hidden');
         }
 
+        // Cargar las canciones de la playlist
+        async function loadPlaylistTracks() {
+            try {
+                showAuthStatus("Cargando canciones de la playlist...", "success");
+                
+                let allTracks = [];
+                let nextUrl = `https://api.spotify.com/v1/playlists/${SPOTIFY_CONFIG.PLAYLIST_ID}/tracks?fields=items(track(id,name,duration_ms,artists(name)))&limit=50`;
+                
+                // Paginación para obtener todas las canciones
+                while (nextUrl) {
+                    const response = await fetch(nextUrl, {
+                        headers: { 'Authorization': `Bearer ${spotifyAccessToken}` }
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error("Error al obtener la playlist");
+                    }
+                    
+                    const data = await response.json();
+                    allTracks = allTracks.concat(data.items);
+                    nextUrl = data.next;
+                }
+                
+                currentPlaylistTracks = allTracks;
+                lastPlaylistUpdate = new Date();
+                showAuthStatus("Playlist cargada correctamente", "success");
+                
+            } catch (error) {
+                console.error("Error al cargar la playlist:", error);
+                showAuthStatus(`Error al cargar la playlist: ${error.message}`, "error");
+                currentPlaylistTracks = null;
+            }
+        }
+
         // Buscar canciones en Spotify
         async function searchSong() {
             const query = songSearch.value.trim();
@@ -685,6 +783,9 @@
                 return;
             }
             
+            const resultsContainer = document.createElement('div');
+            resultsContainer.className = 'track-list';
+            
             tracks.forEach(track => {
                 const trackDiv = document.createElement('div');
                 trackDiv.className = 'track-item';
@@ -692,86 +793,95 @@
                 // Imagen del álbum o placeholder
                 const albumImage = track.album.images.length > 0 
                     ? `<img src="${track.album.images[1].url}" alt="${track.album.name}" class="track-image">`
-                    : '<div class="track-image" style="background: #333; display: flex; align-items: center; justify-content: center;"><i class="fas fa-music" style="color: #aaa; font-size: 20px;"></i></div>';
+                    : '<div class="track-image-placeholder"><i class="fas fa-music"></i></div>';
                 
                 trackDiv.innerHTML = `
                     <div class="track-info">
                         ${albumImage}
                         <div class="track-details">
-                            <div class="track-name">${track.name}</div>
-                            <div class="track-artist">${track.artists.map(a => a.name).join(", ")}</div>
+                            <div class="track-name" title="${track.name}">${track.name}</div>
+                            <div class="track-artist" title="${track.artists.map(a => a.name).join(", ")}">
+                                ${track.artists.map(a => a.name).join(", ")}
+                            </div>
                         </div>
                     </div>
-                    <button class="add-btn" data-uri="${track.uri}" data-name="${track.name}" data-artist="${track.artists[0].name}">
+                    <button class="add-btn" 
+                            data-uri="${track.uri}" 
+                            data-name="${track.name}" 
+                            data-artist="${track.artists[0].name}"
+                            data-duration="${track.duration_ms}">
                         <i class="fas fa-plus"></i> Añadir
                     </button>
                 `;
                 
-                searchResults.appendChild(trackDiv);
+                resultsContainer.appendChild(trackDiv);
             });
+            
+            searchResults.appendChild(resultsContainer);
             
             // Agregar event listeners a los botones de añadir
             document.querySelectorAll('.add-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', async function() {
                     const trackUri = this.getAttribute('data-uri');
                     const trackName = this.getAttribute('data-name');
                     const artistName = this.getAttribute('data-artist');
-                    addToPlaylist(trackUri, trackName, artistName, this);
+                    const duration = this.getAttribute('data-duration');
+                    
+                    // Verificar si necesitamos actualizar la lista de canciones
+                    const now = new Date();
+                    const minutesSinceLastUpdate = lastPlaylistUpdate ? (now - lastPlaylistUpdate) / (1000 * 60) : Infinity;
+                    
+                    if (!currentPlaylistTracks || minutesSinceLastUpdate > 5) {
+                        await loadPlaylistTracks();
+                    }
+                    
+                    addToPlaylist(trackUri, trackName, artistName, duration, this);
                 });
             });
         }
 
         // Verificar si una canción ya existe en la playlist
-        async function checkIfSongExists(trackName, artistName) {
-            try {
-                // Obtener las canciones actuales de la playlist
-                const response = await fetch(
-                    `https://api.spotify.com/v1/playlists/${SPOTIFY_CONFIG.PLAYLIST_ID}/tracks?fields=items(track(name,artists(name)))`,
-                    {
-                        headers: { 'Authorization': `Bearer ${spotifyAccessToken}` }
-                    }
+        function isDuplicate(trackName, artistName, durationMs) {
+            if (!currentPlaylistTracks) return false;
+            
+            const normalizedTrackName = trackName.toLowerCase().trim();
+            const normalizedArtistName = artistName.toLowerCase().trim();
+            
+            return currentPlaylistTracks.some(existingTrack => {
+                const existing = existingTrack.track;
+                
+                // Comparar nombre de canción (insensible a mayúsculas y espacios)
+                const nameMatch = existing.name.toLowerCase().trim() === normalizedTrackName;
+                
+                // Comparar artista principal
+                const artistMatch = existing.artists.some(
+                    artist => artist.name.toLowerCase().trim() === normalizedArtistName
                 );
                 
-                if (!response.ok) {
-                    throw new Error("No se pudo obtener la lista de canciones");
-                }
+                // Comparar duración (con margen de ±5 segundos)
+                const durationDiff = Math.abs(existing.duration_ms - parseInt(durationMs));
+                const durationMatch = durationDiff < 5000;
                 
-                const data = await response.json();
-                
-                // Verificar si la canción ya existe (comparando nombre y artista)
-                const exists = data.items.some(item => 
-                    item.track.name.toLowerCase() === trackName.toLowerCase() && 
-                    item.track.artists.some(artist => 
-                        artist.name.toLowerCase() === artistName.toLowerCase()
-                    )
-                );
-                
-                return exists;
-                
-            } catch (error) {
-                console.error("Error al verificar canción:", error);
-                return false; // Si hay error, permitimos el intento de agregar
-            }
+                return nameMatch && artistMatch && durationMatch;
+            });
         }
 
         // Función para añadir canción a la playlist (con verificación de duplicados)
-        async function addToPlaylist(trackUri, trackName, artistName, button) {
+        async function addToPlaylist(trackUri, trackName, artistName, durationMs, button) {
             const originalContent = button.innerHTML;
             button.disabled = true;
             button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
             
             try {
-                // Primero verificamos si la canción ya existe
-                const alreadyExists = await checkIfSongExists(trackName, artistName);
-                
-                if (alreadyExists) {
+                // Verificación de duplicados
+                if (isDuplicate(trackName, artistName, durationMs)) {
                     button.innerHTML = '<i class="fas fa-info-circle"></i> Ya existe';
                     button.classList.add('exists');
-                    showAuthStatus("Esta canción ya está en la playlist", "error");
+                    showAuthStatus("Esta canción ya está en la playlist", "warning");
                     return;
                 }
                 
-                // Si no existe, procedemos a agregarla
+                // Si no es duplicado, proceder a agregar
                 button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Añadiendo...';
                 
                 const response = await fetch(
@@ -794,8 +904,20 @@
                     throw new Error(errorData.error?.message || "Error al añadir la canción");
                 }
                 
+                // Éxito - actualizar la lista local de canciones
+                const trackId = trackUri.split(':')[2];
+                currentPlaylistTracks.unshift({
+                    track: {
+                        id: trackId,
+                        name: trackName,
+                        duration_ms: parseInt(durationMs),
+                        artists: [{ name: artistName }]
+                    }
+                });
+                lastPlaylistUpdate = new Date();
+                
                 // Mostrar mensaje de éxito
-                showSuccessMessage("¡Canción añadida exitosamente a la playlist!");
+                showSuccessMessage("¡Canción añadida exitosamente!");
                 button.innerHTML = '<i class="fas fa-check"></i> Añadida';
                 button.classList.remove('exists');
                 button.classList.add('added');
@@ -810,6 +932,7 @@
                 button.classList.add('error');
                 showAuthStatus(`Error: ${error.message}`, "error");
                 
+                // Restaurar estado original después de 2 segundos
                 setTimeout(() => {
                     button.innerHTML = originalContent;
                     button.disabled = false;
@@ -819,7 +942,7 @@
         }
 
         // Mostrar mensaje de éxito
-        function showSuccessMessage(message = "¡Canción añadida exitosamente a la playlist!") {
+        function showSuccessMessage(message = "¡Canción añadida exitosamente!") {
             successMessage.textContent = message;
             successMessage.style.display = 'block';
             setTimeout(() => {
@@ -844,7 +967,10 @@
         function showAuthStatus(message, type = "success") {
             authStatus.textContent = message;
             authStatus.className = 'auth-status'; // Reset classes
-            authStatus.classList.add(type === "error" ? 'status-error' : 'status-connected');
+            authStatus.classList.add(
+                type === "error" ? 'status-error' : 
+                type === "warning" ? 'status-warning' : 'status-connected'
+            );
             authStatus.classList.remove('hidden');
             
             // Ocultar mensaje después de 5 segundos
