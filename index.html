@@ -14,58 +14,9 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
 
     <title>Invitación de 15 | Alfonsina Panza Fontana</title>
-
-    <!-- Solo estilos necesarios para la solución de Spotify -->
-    <style>
-        /* Overlay para autenticación */
-        .auth-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255, 255, 255, 0.8);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-        
-        .auth-overlay.active {
-            display: flex;
-        }
-        
-        .auth-spinner {
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #7e387e;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Clase temporal para auth */
-        .auth-active {
-            overflow: hidden;
-            height: 100vh;
-        }
-    </style>
 </head>
 
 <body>
-
-    <!-- Overlay para autenticación -->
-    <div class="auth-overlay" id="authOverlay">
-        <div class="auth-spinner"></div>
-        <p>Conectando con Spotify...</p>
-    </div>
 
     <!-- Audio -->
     <section class="audio">
@@ -360,11 +311,22 @@
         var fechaInicioEvento = "11/01/2024 21:00:00";
         var fechaFinEvento = "11/02/2024 05:00:00";
         var tituloEvento = "Fiesta de 15";
+    </script>
 
-        // Configuración de Spotify - Versión Mejorada
+    <!-- Scripts Generales -->
+    <script type='text/javascript' src='assets/js/jquery-3.5.1.slim.minc30d.js?v=1720025714'></script>
+    <script type='text/javascript' src='assets/js/popper.min2636.js?v=1720025718'></script>
+    <script type='text/javascript' src='assets/js/bootstrap.mine0ae.js?v=1720025711'></script>
+    <script type='text/javascript' src='assets/js/parallax.min6fdb.js?v=1720025716'></script>
+    <script type='text/javascript' src='assets/js/jquery.fancybox.min11b3.js?v=1720025715'></script>
+    <script type='text/javascript' src='assets/js/scriptsaa67.js?v=1720025719'></script>
+
+    <!-- Script para la sección de música -->
+    <script>
+        // Configuración de Spotify
         const SPOTIFY_CONFIG = {
             CLIENT_ID: "d950ae09b4e14eb0b82b70151b1dcb82",
-            REDIRECT_URI: window.location.origin + window.location.pathname, // Usar URL limpia
+            REDIRECT_URI: window.location.href,
             PLAYLIST_ID: "4Vm8iih2i2K6iXuPev61Il",
             SCOPES: "playlist-modify-public playlist-modify-private user-read-private"
         };
@@ -382,24 +344,16 @@
         const searchResults = document.getElementById('searchResults');
         const authStatus = document.getElementById('authStatus');
         const successMessage = document.getElementById('successMessage');
-        const authOverlay = document.getElementById('authOverlay');
 
-        // Inicialización mejorada
+        // Inicialización
         document.addEventListener('DOMContentLoaded', function() {
             // Configurar event listeners
             suggestBtn.addEventListener('click', openSuggestionForm);
             connectSpotifyBtn.addEventListener('click', connectWithSpotify);
             searchBtn.addEventListener('click', searchSong);
             
-            // Verificar autenticación existente sin alterar la URL
+            // Verificar autenticación existente
             checkSpotifyAuth();
-            
-            // Limpiar hash después de la autenticación
-            if (window.location.hash.includes('access_token')) {
-                setTimeout(() => {
-                    window.history.replaceState({}, document.title, window.location.pathname);
-                }, 100);
-            }
         });
 
         // Abrir formulario de sugerencias
@@ -407,66 +361,26 @@
             window.open("https://docs.google.com/forms/d/e/1FAIpQLSflLqhwmhvp2uNeFbliUVQFj3Yhgkko3xh0nRF-6A47T-aCKg/viewform", "_blank");
         }
 
-        // Función mejorada para conectar con Spotify
+        // Conectar con Spotify
         function connectWithSpotify() {
-            // Mostrar overlay de carga
-            authOverlay.classList.add('active');
-            document.body.classList.add('auth-active');
-            
-            // Guardar la posición actual del scroll
-            const scrollPosition = window.scrollY;
-            
             const authUrl = `https://accounts.spotify.com/authorize?client_id=${SPOTIFY_CONFIG.CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(SPOTIFY_CONFIG.REDIRECT_URI)}&scope=${encodeURIComponent(SPOTIFY_CONFIG.SCOPES)}&show_dialog=true`;
-            
-            // Abrir en ventana emergente
-            const width = 450, height = 730;
-            const left = (screen.width - width) / 2;
-            const top = (screen.height - height) / 2;
-            
-            const spotifyWindow = window.open(authUrl, 'SpotifyAuth', 
-                `width=${width},height=${height},top=${top},left=${left}`);
-            
-            // Verificar periódicamente si la ventana se cerró
-            const checkWindow = setInterval(() => {
-                if (spotifyWindow.closed) {
-                    clearInterval(checkWindow);
-                    checkSpotifyAuth();
-                    // Ocultar overlay
-                    authOverlay.classList.remove('active');
-                    document.body.classList.remove('auth-active');
-                    // Restaurar posición del scroll
-                    window.scrollTo(0, scrollPosition);
-                }
-            }, 500);
-            
-            // Timeout por si la ventana no se cierra
-            setTimeout(() => {
-                if (!spotifyWindow.closed) {
-                    spotifyWindow.close();
-                    authOverlay.classList.remove('active');
-                    document.body.classList.remove('auth-active');
-                    showAuthStatus("La conexión tardó demasiado. Por favor intenta nuevamente.", "error");
-                }
-            }, 30000);
+            window.location.href = authUrl;
         }
 
-        // Verificación de autenticación mejorada
+        // Verificar autenticación con Spotify
         function checkSpotifyAuth() {
-            // Solo verificar hash si existe
-            if (!window.location.hash) return;
-            
-            const hashParams = new URLSearchParams(window.location.hash.substring(1));
-            const token = hashParams.get("access_token");
-            const error = hashParams.get("error");
-            
-            if (error) {
-                showAuthStatus(`Error: ${error}`, "error");
-                return;
-            }
+            const hash = window.location.hash.substring(1);
+            const params = new URLSearchParams(hash);
+            const token = params.get("access_token");
             
             if (token) {
                 spotifyAccessToken = token;
                 isAuthenticated = true;
+                
+                // Actualizar URL para eliminar el token de la barra de direcciones
+                window.history.replaceState({}, document.title, window.location.pathname);
+                
+                // Configurar características para usuarios autenticados
                 setupAuthenticatedFeatures();
             }
         }
@@ -479,7 +393,9 @@
             connectSpotifyBtn.style.background = "#28a745";
             
             // Mostrar mensaje de estado
-            showAuthStatus("✅ Conectado a Spotify. Ya puedes buscar y añadir canciones.", "success");
+            authStatus.textContent = "✅ Conectado a Spotify. Ya puedes buscar y añadir canciones.";
+            authStatus.classList.add('status-connected');
+            authStatus.classList.remove('hidden');
         }
 
         // Buscar canciones en Spotify
@@ -491,10 +407,6 @@
             }
 
             try {
-                // Mostrar estado de carga
-                searchBtn.disabled = true;
-                searchBtn.textContent = "Buscando...";
-                
                 const response = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=5`, {
                     headers: { 'Authorization': `Bearer ${spotifyAccessToken}` }
                 });
@@ -509,9 +421,6 @@
             } catch (error) {
                 console.error("Error en la búsqueda:", error);
                 showAuthStatus(`Error: ${error.message}`, "error");
-            } finally {
-                searchBtn.disabled = false;
-                searchBtn.textContent = "Buscar";
             }
         }
 
@@ -639,14 +548,6 @@
             }, 5000);
         }
     </script>
-
-    <!-- Scripts Generales-->
-    <script type='text/javascript' src='assets/js/jquery-3.5.1.slim.minc30d.js?v=1720025714'></script>
-    <script type='text/javascript' src='assets/js/popper.min2636.js?v=1720025718'></script>
-    <script type='text/javascript' src='assets/js/bootstrap.mine0ae.js?v=1720025711'></script>
-    <script type='text/javascript' src='assets/js/parallax.min6fdb.js?v=1720025716'></script>
-    <script type='text/javascript' src='assets/js/jquery.fancybox.min11b3.js?v=1720025715'></script>
-    <script type='text/javascript' src='assets/js/scriptsaa67.js?v=1720025719'></script>
 
     <!-- Scripts de seguimiento -->
     <script>'undefined'=== typeof _trfq || (window._trfq = []);'undefined'=== typeof _trfd && (window._trfd=[]),_trfd.push({'tccl.baseHost':'secureserver.net'},{'ap':'cpbh-mt'},{'server':'p3plmcpnl486752'},{'dcenter':'p3'},{'cp_id':'3446280'},{'cp_cl':'8'})</script>
