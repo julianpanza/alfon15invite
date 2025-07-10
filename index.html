@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, minimum-scale=0.1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="invitaciones digitales para eventos">
     <meta name="keywords" content="invitaciones, digitales, tarjetas, boda, invitación, interactivas, casamiento, save the date, agenda la fecha, ideas invitación, tarjetas de 15, tarjetas eventos, wedding, matrimonio, ideas tarjetas, rsvp, modelos de invitacion, página de boda, página web de casamiento">
 
@@ -15,343 +15,9 @@
 
     <title>Invitación de 15 | Alfonsina Panza Fontana</title>
 
+    <!-- Solo estilos necesarios para la solución de Spotify -->
     <style>
-        /* Estilos base */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Montserrat', sans-serif;
-        }
-        
-        body {
-            background: linear-gradient(135deg, #f9d1d1, #e3b0e6, #a1c4fd);
-            color: #5a2a5a;
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        section {
-            padding: 60px 0;
-            text-align: center;
-        }
-        
-        h4 {
-            font-size: 28px;
-            margin-bottom: 20px;
-            color: #7e387e;
-            font-weight: 600;
-        }
-        
-        p {
-            font-size: 18px;
-            margin-bottom: 20px;
-            color: #444;
-        }
-        
-        .btn {
-            display: inline-block;
-            background: #7e387e;
-            color: white;
-            padding: 12px 30px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 600;
-            margin: 15px 5px;
-            transition: all 0.3s ease;
-            border: 2px solid #7e387e;
-        }
-        
-        .btn:hover {
-            background: transparent;
-            color: #7e387e;
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(126, 56, 126, 0.3);
-        }
-        
-        .btn-alt {
-            background: transparent;
-            color: #7e387e;
-        }
-        
-        .btn-alt:hover {
-            background: #7e387e;
-            color: white;
-        }
-
-        /* Sección de música mejorada */
-        .music-player {
-            position: relative;
-            z-index: 1;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 15px;
-            padding: 25px;
-            margin-top: 25px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            overflow: hidden;
-        }
-        
-        .spotify-embed-guest {
-            transition: all 0.3s ease;
-            margin-bottom: 20px;
-        }
-        
-        .collab-panel {
-            background: rgba(249, 209, 209, 0.3);
-            border-radius: 15px;
-            padding: 20px;
-            margin-top: 20px;
-            position: relative;
-        }
-        
-        .search-box {
-            display: flex;
-            margin: 20px 0;
-        }
-        
-        #songSearch {
-            flex: 1;
-            padding: 12px 20px;
-            border: 2px solid #e3b0e6;
-            border-radius: 50px 0 0 50px;
-            font-size: 16px;
-            outline: none;
-        }
-        
-        .search-btn {
-            padding: 12px 25px;
-            background: #7e387e;
-            color: white;
-            border: none;
-            border-radius: 0 50px 50px 0;
-            cursor: pointer;
-            font-weight: 600;
-        }
-        
-        #searchResults {
-            margin-top: 20px;
-        }
-        
-        .track-item {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: all 0.3s ease;
-            border-left: 4px solid #a1c4fd;
-        }
-        
-        .track-item:hover {
-            transform: translateX(5px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-        
-        .track-info {
-            flex: 1;
-        }
-        
-        .track-info strong {
-            color: #7e387e;
-            font-size: 17px;
-        }
-        
-        .track-info small {
-            color: #888;
-            font-size: 14px;
-        }
-        
-        .add-btn {
-            background: #1DB954;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        
-        .add-btn:hover {
-            background: #179a46;
-            transform: scale(1.05);
-        }
-        
-        .add-btn:disabled {
-            background: #cccccc;
-            cursor: not-allowed;
-        }
-        
-        .auth-status {
-            margin: 15px 0;
-            padding: 10px;
-            border-radius: 8px;
-            font-weight: 600;
-        }
-        
-        .status-connected {
-            background: rgba(29, 185, 84, 0.2);
-            color: #179a46;
-        }
-        
-        .status-error {
-            background: rgba(255, 99, 132, 0.2);
-            color: #ff6384;
-        }
-        
-        .hidden {
-            display: none;
-        }
-        
-        .success-message {
-            background: rgba(29, 185, 84, 0.2);
-            color: #179a46;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 15px 0;
-            display: none;
-        }
-
-        /* Animaciones */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .animated {
-            animation: fadeIn 0.8s ease-out;
-        }
-        
-        .bounce-in {
-            animation: bounceIn 0.8s ease-out;
-        }
-        
-        @keyframes bounceIn {
-            0% { transform: scale(0.8); opacity: 0; }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        /* Media Queries para Desktop (1024px en adelante) */
-        @media screen and (min-width: 1024px) {
-            /* Ajustes generales */
-            body {
-                font-size: 18px;
-            }
-            
-            /* Header y portada */
-            .logo-portada img {
-                max-width: 60%;
-            }
-            
-            /* Cuenta regresiva */
-            #reloj_number {
-                margin-top: 40px !important;
-            }
-            
-            .num_cuenta {
-                font-size: 3.5rem !important;
-            }
-            
-            .text_cuenta {
-                font-size: 1.2rem !important;
-            }
-            
-            /* Secciones de contenido */
-            section {
-                padding: 80px 0;
-            }
-            
-            h4 {
-                font-size: 2.2rem;
-                margin-bottom: 30px;
-            }
-            
-            /* Galería */
-            .galeria .item-galeria {
-                margin-bottom: 30px;
-            }
-            
-            /* Botones */
-            .btn {
-                padding: 15px 40px;
-                font-size: 1.1rem;
-            }
-            
-            /* Sección de música */
-            .music-player {
-                padding: 40px;
-            }
-            
-            /* Footer */
-            .footer p {
-                font-size: 1.1rem;
-            }
-        }
-
-        /* Media Queries para Pantallas Grandes (1440px en adelante) */
-        @media screen and (min-width: 1440px) {
-            .container {
-                max-width: 1400px;
-            }
-            
-            /* Ajuste de tamaño de fuente */
-            body {
-                font-size: 20px;
-            }
-            
-            /* Portada */
-            .portada {
-                min-height: 100vh;
-            }
-            
-            /* Cuenta regresiva */
-            .num_cuenta {
-                font-size: 4.5rem !important;
-            }
-        }
-
-        /* Correcciones específicas para navegadores de escritorio */
-        @supports (-moz-appearance: none) or (-webkit-appearance: none) or (appearance: none) {
-            /* Firefox y Chrome/Edge */
-            .parallax-portada {
-                background-attachment: fixed;
-            }
-        }
-
-        /* Corrección para Safari */
-        @media not all and (min-resolution:.001dpcm) { 
-            @supports (-webkit-appearance:none) {
-                .parallax-portada {
-                    background-attachment: scroll;
-                }
-            }
-        }
-
-        /* Mejorar renderizado en desktop */
-        html {
-            scroll-behavior: smooth;
-        }
-        
-        body.desktop-view {
-            text-rendering: optimizeLegibility;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        /* Prevenir cambios en el layout durante auth */
-        body.auth-active {
-            overflow: hidden;
-            height: 100vh;
-        }
-        
+        /* Overlay para autenticación */
         .auth-overlay {
             display: none;
             position: fixed;
@@ -383,6 +49,12 @@
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+
+        /* Clase temporal para auth */
+        .auth-active {
+            overflow: hidden;
+            height: 100vh;
         }
     </style>
 </head>
@@ -540,7 +212,7 @@
         </div>
     </section>
 
-    <!-- Sección de Música Mejorada -->
+    <!-- Sección de Música -->
     <section class="canciones">
         <div class="container">
             <img src="https://cdn-icons-png.flaticon.com/512/727/727237.png" alt="Icono de música" class="bounce-in">
@@ -689,20 +361,6 @@
         var fechaFinEvento = "11/02/2024 05:00:00";
         var tituloEvento = "Fiesta de 15";
 
-        // Detectar navegador desktop y aplicar clases específicas
-        function detectDesktop() {
-            const isDesktop = window.innerWidth >= 1024 && !navigator.userAgent.match(/Mobile|Android|iP(hone|od|ad)|Kindle|BlackBerry|Opera Mini|IEMobile/);
-            
-            if (isDesktop) {
-                document.body.classList.add('desktop-view');
-                // Ajustes adicionales para desktop
-                const containers = document.querySelectorAll('.container');
-                containers.forEach(container => {
-                    container.style.maxWidth = '1400px';
-                });
-            }
-        }
-
         // Configuración de Spotify - Versión Mejorada
         const SPOTIFY_CONFIG = {
             CLIENT_ID: "d950ae09b4e14eb0b82b70151b1dcb82",
@@ -736,9 +394,6 @@
             // Verificar autenticación existente sin alterar la URL
             checkSpotifyAuth();
             
-            // Detectar si es desktop
-            detectDesktop();
-            
             // Limpiar hash después de la autenticación
             if (window.location.hash.includes('access_token')) {
                 setTimeout(() => {
@@ -746,9 +401,6 @@
                 }, 100);
             }
         });
-
-        // Ejecutar al redimensionar
-        window.addEventListener('resize', detectDesktop);
 
         // Abrir formulario de sugerencias
         function openSuggestionForm() {
@@ -988,7 +640,7 @@
         }
     </script>
 
-    <!-- Scripts Generales -->
+    <!-- Scripts Generales-->
     <script type='text/javascript' src='assets/js/jquery-3.5.1.slim.minc30d.js?v=1720025714'></script>
     <script type='text/javascript' src='assets/js/popper.min2636.js?v=1720025718'></script>
     <script type='text/javascript' src='assets/js/bootstrap.mine0ae.js?v=1720025711'></script>
