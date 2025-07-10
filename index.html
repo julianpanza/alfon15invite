@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, minimum-scale=0.1">
     <meta name="description" content="invitaciones digitales para eventos">
     <meta name="keywords" content="invitaciones, digitales, tarjetas, boda, invitación, interactivas, casamiento, save the date, agenda la fecha, ideas invitación, tarjetas de 15, tarjetas eventos, wedding, matrimonio, ideas tarjetas, rsvp, modelos de invitacion, página de boda, página web de casamiento">
 
@@ -14,6 +14,203 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
 
     <title>Invitación de 15 | Alfonsina Panza Fontana</title>
+
+    <style>
+        /* Estilos base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f9d1d1, #e3b0e6, #a1c4fd);
+            color: #5a2a5a;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        section {
+            padding: 60px 0;
+            text-align: center;
+        }
+        
+        h4 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #7e387e;
+            font-weight: 600;
+        }
+        
+        p {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #444;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: #7e387e;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            margin: 15px 5px;
+            transition: all 0.3s ease;
+            border: 2px solid #7e387e;
+        }
+        
+        .btn:hover {
+            background: transparent;
+            color: #7e387e;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(126, 56, 126, 0.3);
+        }
+        
+        .btn-alt {
+            background: transparent;
+            color: #7e387e;
+        }
+        
+        .btn-alt:hover {
+            background: #7e387e;
+            color: white;
+        }
+
+        /* Animaciones */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animated {
+            animation: fadeIn 0.8s ease-out;
+        }
+        
+        .bounce-in {
+            animation: bounceIn 0.8s ease-out;
+        }
+        
+        @keyframes bounceIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Media Queries para Desktop (1024px en adelante) */
+        @media screen and (min-width: 1024px) {
+            /* Ajustes generales */
+            body {
+                font-size: 18px;
+            }
+            
+            /* Header y portada */
+            .logo-portada img {
+                max-width: 60%;
+            }
+            
+            /* Cuenta regresiva */
+            #reloj_number {
+                margin-top: 40px !important;
+            }
+            
+            .num_cuenta {
+                font-size: 3.5rem !important;
+            }
+            
+            .text_cuenta {
+                font-size: 1.2rem !important;
+            }
+            
+            /* Secciones de contenido */
+            section {
+                padding: 80px 0;
+            }
+            
+            h4 {
+                font-size: 2.2rem;
+                margin-bottom: 30px;
+            }
+            
+            /* Galería */
+            .galeria .item-galeria {
+                margin-bottom: 30px;
+            }
+            
+            /* Botones */
+            .btn {
+                padding: 15px 40px;
+                font-size: 1.1rem;
+            }
+            
+            /* Sección de música */
+            .music-player {
+                padding: 40px;
+            }
+            
+            /* Footer */
+            .footer p {
+                font-size: 1.1rem;
+            }
+        }
+
+        /* Media Queries para Pantallas Grandes (1440px en adelante) */
+        @media screen and (min-width: 1440px) {
+            .container {
+                max-width: 1400px;
+            }
+            
+            /* Ajuste de tamaño de fuente */
+            body {
+                font-size: 20px;
+            }
+            
+            /* Portada */
+            .portada {
+                min-height: 100vh;
+            }
+            
+            /* Cuenta regresiva */
+            .num_cuenta {
+                font-size: 4.5rem !important;
+            }
+        }
+
+        /* Correcciones específicas para navegadores de escritorio */
+        @supports (-moz-appearance: none) or (-webkit-appearance: none) or (appearance: none) {
+            /* Firefox y Chrome/Edge */
+            .parallax-portada {
+                background-attachment: fixed;
+            }
+        }
+
+        /* Corrección para Safari */
+        @media not all and (min-resolution:.001dpcm) { 
+            @supports (-webkit-appearance:none) {
+                .parallax-portada {
+                    background-attachment: scroll;
+                }
+            }
+        }
+
+        /* Mejorar renderizado en desktop */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body.desktop-view {
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+        }
+    </style>
 </head>
 
 <body>
@@ -311,18 +508,21 @@
         var fechaInicioEvento = "11/01/2024 21:00:00";
         var fechaFinEvento = "11/02/2024 05:00:00";
         var tituloEvento = "Fiesta de 15";
-    </script>
 
-    <!-- Scripts Generales -->
-    <script type='text/javascript' src='assets/js/jquery-3.5.1.slim.minc30d.js?v=1720025714'></script>
-    <script type='text/javascript' src='assets/js/popper.min2636.js?v=1720025718'></script>
-    <script type='text/javascript' src='assets/js/bootstrap.mine0ae.js?v=1720025711'></script>
-    <script type='text/javascript' src='assets/js/parallax.min6fdb.js?v=1720025716'></script>
-    <script type='text/javascript' src='assets/js/jquery.fancybox.min11b3.js?v=1720025715'></script>
-    <script type='text/javascript' src='assets/js/scriptsaa67.js?v=1720025719'></script>
+        // Detectar navegador desktop y aplicar clases específicas
+        function detectDesktop() {
+            const isDesktop = window.innerWidth >= 1024 && !navigator.userAgent.match(/Mobile|Android|iP(hone|od|ad)|Kindle|BlackBerry|Opera Mini|IEMobile/);
+            
+            if (isDesktop) {
+                document.body.classList.add('desktop-view');
+                // Ajustes adicionales para desktop
+                const containers = document.querySelectorAll('.container');
+                containers.forEach(container => {
+                    container.style.maxWidth = '1400px';
+                });
+            }
+        }
 
-    <!-- Script para la sección de música -->
-    <script>
         // Configuración de Spotify
         const SPOTIFY_CONFIG = {
             CLIENT_ID: "d950ae09b4e14eb0b82b70151b1dcb82",
@@ -354,7 +554,13 @@
             
             // Verificar autenticación existente
             checkSpotifyAuth();
+            
+            // Detectar si es desktop
+            detectDesktop();
         });
+
+        // Ejecutar al redimensionar
+        window.addEventListener('resize', detectDesktop);
 
         // Abrir formulario de sugerencias
         function openSuggestionForm() {
@@ -548,6 +754,14 @@
             }, 5000);
         }
     </script>
+
+    <!-- Scripts Generales -->
+    <script type='text/javascript' src='assets/js/jquery-3.5.1.slim.minc30d.js?v=1720025714'></script>
+    <script type='text/javascript' src='assets/js/popper.min2636.js?v=1720025718'></script>
+    <script type='text/javascript' src='assets/js/bootstrap.mine0ae.js?v=1720025711'></script>
+    <script type='text/javascript' src='assets/js/parallax.min6fdb.js?v=1720025716'></script>
+    <script type='text/javascript' src='assets/js/jquery.fancybox.min11b3.js?v=1720025715'></script>
+    <script type='text/javascript' src='assets/js/scriptsaa67.js?v=1720025719'></script>
 
     <!-- Scripts de seguimiento -->
     <script>'undefined'=== typeof _trfq || (window._trfq = []);'undefined'=== typeof _trfd && (window._trfd=[]),_trfd.push({'tccl.baseHost':'secureserver.net'},{'ap':'cpbh-mt'},{'server':'p3plmcpnl486752'},{'dcenter':'p3'},{'cp_id':'3446280'},{'cp_cl':'8'})</script>
