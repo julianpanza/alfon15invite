@@ -1015,3 +1015,13 @@ section.cuenta-regresiva{
   text-align: center;
   color: var(--color-secundario); /* Asegura que el color sea coherente */
 }
+
+.music-player {
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.spotify-embed-guest {
+    transition: all 0.3s ease;
+}
